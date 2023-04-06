@@ -16,6 +16,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@astrojs/mdx": "^0.18.2",
+    "@astrojs/netlify": "^2.2.0",
     "@astrojs/rss": "^2.3.0",
     "@resvg/resvg-js": "^2.4.1",
     "astro": "^2.1.5",
@@ -52,9 +54,9 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "lint-staged": {
-    "*": [
-      "prettier --plugin-search-dir=. --write"
-    ]
-  }
+  // "lint-staged": {
+  //   "*": [
+  //     "prettier --plugin-search-dir=. --write"
+  //   ]
+  // }
 }

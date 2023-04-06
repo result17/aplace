@@ -1,0 +1,42 @@
+---
+author: COSIN
+pubDatetime: 2023-04-06T17:45:27.188Z
+title: axum extractors 顺序问题
+postSlug: ""
+featured: false
+draft: false
+tags:
+  - color-schemes
+  - docs
+ogImage: ""
+description:
+  axum extractors 顺序问题 导致编译出错
+---
+
+# The order of extractors
+在学习 axum 的 hanlder 时（代码如下），一直无法通过编译，反复查看编译错误和 axum examples 还是没能找到问题所在。最后 Google很久后，终于发现 axum hanlder 的 extractors 要按顺序传入参数。
+
+```rust
+pub async fn sub(
+  Form(user): Form<User>,
+  State(state): State<PgPool>,
+) -> impl IntoResponse {
+}
+```
+正确的顺序为 <b>method -> headers -> state -> body</b>
+```rust
+async fn handler(
+    // `Method` and `HeaderMap` don't consume the request body so they can
+    // put anywhere in the argument list (but before `body`)
+    method: Method,
+    headers: HeaderMap,
+    // `State` is also an extractor so it needs to be before `body`
+    State(state): State<AppState>,
+    // `String` consumes the request body and thus must be the last extractor
+    body: String,
+) {
+    // ...
+}
+```
+## 参考链接
+[Axum extractor](https://docs.rs/axum/latest/axum/extract/index.html#the-order-of-extractors)
