@@ -1,0 +1,27 @@
+# 前端 history 路由
+对于经典的前端<code>Single Page Application</code>来说，常见的路由模式为 history 路由。此路由模式通常要需要应用网关 Nginx 进行如下配置。
+```
+location / {
+  try_files $uri $uri/ /index.html;
+}
+
+```
+当用户在地址栏上输入
+```
+https//my.app/user
+```
+上面的 Nginx 规则就被匹配上，返回根目录上的 index.html, 而不是 user 目录上的 index.html 。
+
+## Nginx 规则 BUG
+但在我的工作上，此条规则带来了 BUG。背景如下：用户使用的 Single Page Application， 会根据路由异步加载对应的 JS 文件。但当此应用重新被构建后，之前的构建生成的 JS 文件可能被移除了，Ngnix无法返回此文件。但由于上面的规则，此时 Nginx会匹配上根目录上的index.html。将 html当 作 JS 文件返回，浏览器的 JS引擎毫无意外的执行出错。
+
+## 修复 BUG
+修复起来也简单，但请求 JS 文件时采用协商缓存。当实在找不到此文件时，前端全局监听此错误事件，提示用户刷新页面。Nginx 配置如下
+```
+location .* .(js css) $ {
+  add_header 'Cache-Control' 'no-cache';
+}
+location / {
+  try_files $uri $uri/ /index.html;
+}
+```
