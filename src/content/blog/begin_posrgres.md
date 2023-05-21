@@ -4,7 +4,7 @@ pubDatetime: 2023-05-21T10:18:07+08:00
 title: postgres学习记录
 postSlug: ""
 featured: false
-draft: true
+draft: false
 tags:
   - color-schemes
   - docs
