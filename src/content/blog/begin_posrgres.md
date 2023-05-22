@@ -175,3 +175,61 @@ SELECT depname, empno, salary, avg(salary) OVER (PARTITION BY depname) FROM emps
 -- 不等价
 SELECT depname, empno, salary, avg(salary) FROM empsalary GROUP BY depname, empno, salary;
 ```
+
+# function
+```sql
+CREATE FUNCTION dept(text) RETURNS dept
+    AS $$ SELECT * FROM dept WHERE name = $1 $$
+    LANGUAGE SQL;
+-- 函数调用
+sqrt(2)
+```
+```sql
+-- uppercase 布尔值
+CREATE FUNCTION concat_lower_or_upper(a text, b text, uppercase boolean DEFAULT false)
+RETURNS text
+AS
+$$
+ SELECT CASE
+        WHEN $3 THEN UPPER($1 || ' ' || $2)
+        ELSE LOWER($1 || ' ' || $2)
+        END;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+SELECT concat_lower_or_upper('Hello', 'World', true);
+```
+```sql
+-- 使用命名参数
+--  WORLD HELLO
+SELECT concat_lower_or_upper(b => 'Hello', a => 'World', uppercase => true);
+-- 混合使用
+SELECT concat_lower_or_upper('Hello', 'World', uppercase => true);
+--  HELLO WORLD
+```
+# 创建表的更多用法
+## 自动生成列
+```sql
+CREATE TABLE people (
+    ...,
+    height_cm numeric DEFAULT 10,
+    height_in numeric GENERATED ALWAYS AS (height_cm / 2.54) STORED
+);
+```
+- 自動欄位的表示式只能使用 immutable 函數，不能使用子查詢或以任何方式引用同筆資料以外的任何內容。
+- 自動欄位的表示式不能引用另一個自動欄位。
+- 自動欄位的表示式不能引用系統欄位（tableoid 除外）。
+- 自動欄位不能有欄位預設值或識別定義。
+- 自動欄位不能是分割區主鍵的一部分。
+- 外部資料表可以具有自動欄位。
+
+## 限制条件
+```sql
+-- 加入唯一性的限制條件，將會自動建立一個具唯一性的 B-tree 索引，其包含的欄位就如限制條件中所條列的欄位。
+CREATE TABLE products (
+    product_no integer UNIQUE,
+    name text NOT NULL,
+    price numeric CHECK (price > 0),
+    discounted_price numeric CHECK (discounted_price > 0),
+    CHECK (price > discounted_price)
+);
+```
