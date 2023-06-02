@@ -175,3 +175,28 @@ SELECT depname, empno, salary, avg(salary) OVER (PARTITION BY depname) FROM emps
 -- 不等价
 SELECT depname, empno, salary, avg(salary) FROM empsalary GROUP BY depname, empno, salary;
 ```
+
+# 表继承
+```sql
+CREATE TABLE cities (
+  name       text,
+  population real,
+  altitude   int     -- (in ft)
+);
+
+CREATE TABLE capitals (
+  state      char(2)
+) INHERITS (cities);
+```
+```sql
+-- cities & capitals
+SELECT name, altitude
+  FROM cities
+  WHERE altitude > 500;
+-- only cities
+SELECT name, altitude
+    FROM ONLY cities
+    WHERE altitude 
+>
+ 500;
+```
