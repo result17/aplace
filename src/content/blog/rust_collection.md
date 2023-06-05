@@ -113,3 +113,47 @@ match &src {
 `OsStr`的主要特点是它可以在不同的操作系统之间进行透明地转换。在不同操作系统中，字符串可能具有不同的编码和表示方式，例如在 Windows 中使用 UTF-16 编码，在 Unix 系统中使用 UTF-8 编码。`OsStr`可以自动识别并处理这些差异，从而使得 Rust 代码更加可移植和跨平台。
 
 `OsStr`通常与 `std::ffi::OsString` 和 `std::os::unix::ffi::OsStrExt` 等其他相关类型和 trait 一起使用，以便进行操作系统字符串的创建、转换和处理。例如，可以使用 `OsStr` 和 `OsString` 类型来表示文件路径和命令行参数等系统相关的字符串数据。
+
+## vec!
+```rust
+// Create a [Vec] from a given element and size:
+let v = vec![1; 3];
+assert_eq!(v, [1, 1, 1]);
+```
+
+## trait Into
+```rust
+struct Person {
+    name: String,
+    age: u32,
+}
+
+impl Into<String> for Person {
+    fn into(self) -> String {
+        format!("{} ({})", self.name, self.age)
+    }
+}
+
+fn main() {
+    let person = Person {
+        name: "Alice".to_string(),
+        age: 30,
+    };
+    let name_and_age: String = person.into();
+    println!("{}", name_and_age);
+}
+```
+
+## zip
+将两个vec合并压缩为一个vec的工具函数
+```rust
+let a1 = [1, 2, 3];
+let a2 = [4, 5, 6];
+// [(1,4),(2，5),(3,6)]
+let mut iter = a1.iter().zip(a2.iter());
+
+assert_eq!(iter.next(), Some((&1, &4)));
+assert_eq!(iter.next(), Some((&2, &5)));
+assert_eq!(iter.next(), Some((&3, &6)));
+assert_eq!(iter.next(), None);
+```
