@@ -157,3 +157,12 @@ assert_eq!(iter.next(), Some((&2, &5)));
 assert_eq!(iter.next(), Some((&3, &6)));
 assert_eq!(iter.next(), None);
 ```
+## String::from_utf8_lossy
+在 Rust 中，String::from_utf8_lossy 方法用于将一个字节数组（&[u8]）转换为一个字符串（String），并在遇到无效的 UTF-8 字符时使用 U+FFFD 代替该字符。
+```rust
+fn main() {
+    let bytes = vec![b'h', b'e', b'l', b'l', b'o', 0xf0, 0x90, 0x80, 0x81, b'!'];
+    let string = String::from_utf8_lossy(&bytes);
+    println!("{}", string); // 输出：hello��!
+}
+```
