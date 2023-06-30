@@ -2,13 +2,13 @@
 author: cosin
 pubDatetime: 2023-05-21T10:18:07+08:00 
 title: postgres学习记录
-postSlug: ""
+postSlug:
 featured: false
 draft: false
 tags:
   - color-schemes
   - docs
-ogImage: ""
+ogImage:
 description:
   记录学习postgres过程
 ---

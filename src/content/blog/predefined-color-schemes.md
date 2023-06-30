@@ -7,7 +7,7 @@ featured: false
 draft: false
 tags:
   - color-schemes
-ogImage: ""
+ogImage:
 description:
   Some of the well-crafted, predefined color schemes for AstroPaper blog
   theme.

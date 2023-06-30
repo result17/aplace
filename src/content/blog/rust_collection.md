@@ -2,13 +2,13 @@
 author: cosin
 pubDatetime: 2023-05-19T10:00:23+08:00 
 title: rust杂项记录
-postSlug: ""
+postSlug:
 featured: false
 draft: true
 tags:
   - color-schemes
   - docs
-ogImage: ""
+ogImage:
 description:
   记录学习rust细碎记录
 ---
@@ -107,6 +107,8 @@ match &src {
 }
 ```
 
+## std::ffi::OsStr
+在 Rust 标准库中，`std::ffi::OsStr` 是一个用于表示操作系统本地字符串的类型。它是一个不可变的字符串类型，通常用于在 Rust 代码和操作系统 API 之间进行交互。`OsStr`的名称代表"操作系统字符串"（Operating System String）。
 ## std::ffi::OsStr
 在 Rust 标准库中，`std::ffi::OsStr` 是一个用于表示操作系统本地字符串的类型。它是一个不可变的字符串类型，通常用于在 Rust 代码和操作系统 API 之间进行交互。`OsStr`的名称代表"操作系统字符串"（Operating System String）。
 

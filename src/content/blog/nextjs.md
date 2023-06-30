@@ -2,13 +2,13 @@
 author: cosin
 pubDatetime: 2023-06-05T10:41:15+08:00 
 title: Nextjs 文档阅读记录
-postSlug: ""
+postSlug:
 featured: false
 draft: false
 tags:
   - color-schemes
   - docs
-ogImage: ""
+ogImage:
 description:
   Nextjs
 ---
