@@ -168,3 +168,49 @@ fn main() {
     println!("{}", string); // 输出：hello��!
 }
 ```
+
+## 双线程交替打印
+```rust
+use std::sync::atomic::{AtomicU16, Ordering::Relaxed};
+use std::sync::{Arc, Condvar, Mutex};
+use std::thread;
+
+fn main() {
+    static N: AtomicU16 = AtomicU16::new(0);
+    static MAX: u16 = 100;
+    let pair = Arc::new((Mutex::new(false), Condvar::new()));
+
+    thread::scope(|s| {
+        s.spawn(|| loop {
+            let (lock, cvar) = &*pair;
+            N.fetch_add(1, Relaxed);
+            let cur = N.load(Relaxed);
+            let mut is_print_b = lock.lock().unwrap();
+            *is_print_b = false;
+            cvar.notify_one();
+            if cur > MAX {
+                break;
+            }
+            println!("{}: {}", 'A', cur);
+            while !*is_print_b {
+                is_print_b = cvar.wait(is_print_b).unwrap();
+            }
+        });
+        s.spawn(|| loop {
+            let (lock, cvar) = &*pair;
+            N.fetch_add(1, Relaxed);
+            let cur = N.load(Relaxed);
+            let mut is_print_b = lock.lock().unwrap();
+            *is_print_b = true;
+            cvar.notify_one();
+            if cur > MAX {
+                break;
+            }
+            println!("{}: {}", 'B', cur);
+            while *is_print_b {
+                is_print_b = cvar.wait(is_print_b).unwrap();
+            }
+        });
+    });
+}
+```
