@@ -2,13 +2,11 @@
 author: cosin
 pubDatetime: 2023-05-08T02:39:14Z
 title: 为什么日志总以std err输出
-postSlug:
 featured: false
 draft: false
 tags:
   - color-schemes
   - docs
-ogImage:
 description:
   日志输出
 ---

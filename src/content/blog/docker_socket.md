@@ -2,13 +2,11 @@
 author: cosin
 pubDatetime: 2023-05-20T13:42:30+08:00
 title: docker ip地址问题
-postSlug:
 featured: false
 draft: false
 tags:
   - color-schemes
   - docs
-ogImage:
 description:
   docker容器ip地址区别
 ---

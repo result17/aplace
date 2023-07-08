@@ -2,13 +2,11 @@
 author: cosin
 pubDatetime: 2023-05-19T10:00:23+08:00 
 title: rust杂项记录
-postSlug:
 featured: false
 draft: true
 tags:
   - color-schemes
   - docs
-ogImage:
 description:
   记录学习rust细碎记录
 ---
