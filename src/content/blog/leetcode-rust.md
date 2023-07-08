@@ -7,12 +7,11 @@ draft: false
 tags:
   - color-schemes
   - docs
-ogImage:
 description:
   使用rust学习leetcode题目
 ---
 
-## 2 Add Two Numbers
+## 2.Add Two Numbers
 ```rs
 impl Solution {
     pub fn add_two_numbers(
@@ -41,5 +40,22 @@ impl Solution {
             }
         }
     }
+}
+```
+
+## 3. Longest Substring Without Repeating Characters
+```rs
+impl Solution {
+  pub fn length_of_longest_substring(s: String) -> i32 {
+      let mut ans = 0;
+      let mut chars: [usize; 128] = [0; 128];
+      let mut start = 0;
+      for (end, ch) in s.chars().enumerate() {
+        start = start.max(chars[ch as usize]);
+        ans = ans.max(end - start + 1);
+        chars[ch as usize] = end + 1;
+      }
+      ans as i32
+  }
 }
 ```
