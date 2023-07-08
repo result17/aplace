@@ -95,3 +95,15 @@ const throttle = function (fn, limit) {
   }
 }
 ```
+
+## package.json 中的 peerDependencies 
+在我们进行一些插件开发的时候会经常用到，比如 jQuery-ui 的开发依赖于 jQuery，html-webpack-plugin 的开发依赖于 webpack等。
+
+## vue core hasOwn
+```ts
+const hasOwnProperty = Object.prototype.hasOwnProperty
+export const hasOwn = (
+  val: object,
+  key: string | symbol
+): key is keyof typeof val => hasOwnProperty.call(val, key)
+```
