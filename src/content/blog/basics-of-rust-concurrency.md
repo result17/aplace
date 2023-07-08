@@ -7,7 +7,6 @@ featured: true
 draft: true
 tags:
   - note
-ogImage:
 description:
   学习rust异步和多线程的笔记
 ---
