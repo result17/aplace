@@ -1,6 +1,6 @@
 ---
 author: cosin
-pubDatetime: todo
+pubDatetime: 2023-07-08T14:42:16+08:00 
 title: rust atomics and locks char1
 postSlug: basics-of-rust-concurrency
 featured: true
