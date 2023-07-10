@@ -146,3 +146,41 @@ public:
     }
 };
 ```
+
+## 21. Merge Two Sorted Lists
+```rs
+impl Solution {
+    pub fn merge_two_lists(
+        list1: Option<Box<ListNode>>,
+        list2: Option<Box<ListNode>>,
+    ) -> Option<Box<ListNode>> {
+        match (list1, list2) {
+            (None, None) => None,
+            (Some(list), None) | (None, Some(list)) => Some(list),
+            (Some(list1), Some(list2)) => {
+                let mut node = Box::new(ListNode::new(list1.val.min(list2.val)));
+                if list1.val < list2.val {
+                    node.next = Solution::merge_two_lists(list1.next, Some(list2));
+                } else {
+                    node.next = Solution::merge_two_lists(Some(list1), list2.next);
+                }
+                Some(node)
+            }
+        }
+    }
+}
+```
+## 121. Best Time to Buy and Sell Stock
+```rs
+impl Solution {
+  pub fn max_profit(prices: Vec<i32>) -> i32 {
+      let mut ans = 0;
+      let mut min_cost = prices[0];
+      for price in prices {
+        ans = (price - min_cost).max(ans);
+        min_cost = min_cost.min(price);
+      }
+      ans
+  }
+}
+```
