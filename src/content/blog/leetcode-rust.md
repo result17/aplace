@@ -59,3 +59,23 @@ impl Solution {
   }
 }
 ```
+
+## 9. Palindrome Number
+```rs
+impl Solution {
+  pub fn is_palindrome(x: i32) -> bool {
+      if x < 0 {
+        false
+      } else {
+        let mut rev_n = 0;
+        let mut n = x;
+        while n > 0 {
+          let rest = n % 10;
+          rev_n = rev_n * 10 + rest;
+          n = n / 10;
+        }
+        rev_n == x
+      }
+  }
+}
+```
