@@ -204,3 +204,45 @@ impl Solution {
   }
 }
 ```
+基于状态机
+```rs
+impl Solution {
+  pub fn max_profit(prices: Vec<i32>) -> i32 {
+      let mut hold = std::i32::MIN;
+      let mut not_hold = 0;
+    
+      for price in prices {
+        let mut prev_hold = hold;
+        let mut prev_not_hold = not_hold;
+        hold = prev_hold.max(prev_not_hold - price);
+        not_hold = prev_not_hold.max(price + prev_hold)
+      }
+
+      not_hold
+  }
+}
+```
+
+## 100. Same Tree
+```rs
+use std::cell::RefCell;
+use std::rc::Rc;
+impl Solution {
+    pub fn is_same_tree(
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        match (p, q) {
+            (None, None) => true,
+            (Some(n), None) | (None, Some(n)) => false,
+            (Some(ref n), Some(ref m)) => {
+                let n = n.borrow();
+                let m = m.borrow();
+                n.val == m.val
+                    && Solution::is_same_tree(n.left.clone(), m.left.clone())
+                    && Solution::is_same_tree(n.right.clone(), m.right.clone())
+            }
+        }
+    }
+}
+```
