@@ -79,3 +79,70 @@ impl Solution {
   }
 }
 ```
+
+## 66. Plus One
+```rs
+impl Solution {
+  pub fn plus_one(digits: Vec<i32>) -> Vec<i32> {
+      let mut carry = true;
+      let mut i = digits.len() - 1;
+      let mut ans = Vec::<i32>::new();
+      loop {
+        let n = match carry {
+            true => {
+              let tmp = digits[i] + 1;
+              if tmp < 10 {
+                carry =  false;
+              }
+              tmp % 10
+            },
+            false => digits[i]
+        };
+        ans.push(n);
+
+        if i == 0 {
+          break;
+        }
+
+        i -= 1;
+      }
+      if carry {
+        ans.push(1)
+      }
+      ans.reverse();
+      ans
+  }
+}
+```
+
+## 172. Factorial Trailing Zeroes
+```rs
+impl Solution {
+    pub fn trailing_zeroes(n: i32) -> i32 {
+        let mut x = n;
+        let mut count = 0;
+        while x >= 5 {
+            x /= 5;
+            count += x;
+        }
+        count
+    }
+}
+```
+
+## 141. Linked List Cycle
+```cpp
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while (fast != NULL && fast->next != NULL) {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (slow == fast) return true;
+        }
+        return false;
+    }
+};
+```
