@@ -170,6 +170,7 @@ impl Solution {
     }
 }
 ```
+
 ## 121. Best Time to Buy and Sell Stock
 ```rs
 impl Solution {
@@ -181,6 +182,25 @@ impl Solution {
         min_cost = min_cost.min(price);
       }
       ans
+  }
+}
+```
+
+## 122. Best Time to Buy and Sell Stock II
+```rs
+impl Solution {
+  pub fn max_profit(prices: Vec<i32>) -> i32 {
+      let mut dp = vec![];
+      let mut i = 0;
+
+      while i < prices.len() - 1 {
+        if prices[i] < prices[i + 1] {
+          dp.push(prices[i + 1] - prices[i])
+        }
+        i += 1;
+      }
+
+      dp.iter().fold(0, |acc, x| acc + x)
   }
 }
 ```
