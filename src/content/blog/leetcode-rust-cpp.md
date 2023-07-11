@@ -246,3 +246,69 @@ impl Solution {
     }
 }
 ```
+
+## 112. Path Sum
+```rs
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> bool {
+        match root {
+          None => false,
+          Some(ref n) => {
+            let n = n.borrow();
+            let val = n.val;
+            if val == target_sum && n.left == None && n.right == None {
+              return true;
+            }
+            Solution::has_path_sum(n.left.clone(), target_sum - val) || Solution::has_path_sum(n.right.clone(), target_sum - val)
+          }
+        }
+    }
+}
+```
+
+## 70. Climbing Stairs
+```rs
+impl Solution {
+    pub fn climb_stairs(n: i32) -> i32 {
+        let mut prev = 0;
+        let mut cur = 1;
+        let mut i = 1;
+        while i <= n {
+            let temp = cur;
+            cur += prev;
+            prev = temp;
+            i += 1;
+        }
+        cur
+    }
+}
+```
+
+## 198. House Robber
+```rs
+impl Solution {
+  pub fn rob(nums: Vec<i32>) -> i32 {
+      let len = nums.len();
+      if len == 0 {
+        return 0;
+      }
+      let mut dp = Vec::<i32>::with_capacity(len);
+      dp.push(nums[0]);
+      Solution::trade(nums, len, &mut dp);
+      dp[len - 1]
+  }
+
+  fn trade(nums: Vec<i32>, len: usize, dp: &mut Vec<i32>) {
+    let mut i = 1;
+    while i < len {
+      match i == 1 {
+        true => dp.push(nums[0].max(nums[1])),
+        false => dp.push((nums[i] + dp[i - 2]).max(dp[i - 1])),
+      };
+      i += 1;
+    }
+  }
+}
+```
