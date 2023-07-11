@@ -372,3 +372,44 @@ public:
     }
 };
 ```
+
+## 139. Word Break
+```cpp
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        if (s.size() == 0) return false;
+        unordered_set<string> set(wordDict.begin(), wordDict.end());
+        vector<bool> dp(s.size() + 1, false);
+        dp[0] = true;
+        for (int i = 1; i <= s.size(); i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (dp[j]) {
+                    string cur = s.substr(j, i - j);
+                    if (set.find(cur) != set.end()) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return dp[s.size()];
+    }
+};
+```
+
+## 27. Remove Element
+```cpp
+class Solution {
+public:
+    int removeElement(vector<int>& nums, int val) {
+        int idx = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] != val) {
+                nums[idx++] = nums[i];
+            }
+        }
+        return idx;
+    }
+};
+```
