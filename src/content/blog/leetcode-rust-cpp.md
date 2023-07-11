@@ -11,6 +11,24 @@ description:
   使用rust学习leetcode题目
 ---
 
+## 1. Two Sum
+```rs
+impl Solution {
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        use std::collections::HashMap;
+        
+        let mut m: HashMap<i32, i32> = HashMap::new();
+        for (i, v) in nums.iter().enumerate() {
+            match m.get(&(target - *v)) {
+                Some(&i2) => return vec![i as i32, i2],
+                None => m.insert(*v, i as i32),
+            };
+        }
+        vec![]
+    }
+}
+```
+
 ## 2.Add Two Numbers
 ```rs
 impl Solution {
@@ -311,4 +329,46 @@ impl Solution {
     }
   }
 }
+```
+## 199. Binary Tree Right Side View
+```cpp
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        vector<int> ans;
+        if (!root) return ans;
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            int size = q.size();
+            while (size > 0) {
+                TreeNode* cur = q.front();
+                q.pop();
+                if (cur->left) q.push(cur->left);
+                if (cur ->right) q.push(cur->right);
+                if (size == 1) ans.push_back(cur->val);
+                size--;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 88. Merge Sorted Array
+```cpp
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int len = m + n - 1;
+        int i = m - 1;
+        int j = n - 1;
+        while (i >= 0 && j >= 0) {
+            nums1[len--] = nums1[i] > nums2[j] ? nums1[i--] : nums2[j--];
+        }
+        while (j >= 0) {
+            nums1[len--] = nums2[j--];
+        }
+    }
+};
 ```
