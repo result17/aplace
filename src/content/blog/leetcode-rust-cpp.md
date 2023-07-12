@@ -330,6 +330,7 @@ impl Solution {
   }
 }
 ```
+
 ## 199. Binary Tree Right Side View
 ```cpp
 class Solution {
@@ -410,6 +411,147 @@ public:
             }
         }
         return idx;
+    }
+};
+```
+
+## 322. Coin Change
+```rs
+impl Solution {
+    pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
+        let mut dp = vec![-1; (amount + 1) as usize];
+        dp[0] = 0;
+        for coin in coins {
+            let mut i = coin as usize;
+            while i < dp.len() {
+                let diff = i - coin as usize;
+
+                if dp[diff] == -1 {
+                    i += 1;
+                    continue;
+                }
+                dp[i] = match dp[i] == -1 {
+                    true => dp[diff] + 1,
+                    false => dp[i].min(dp[diff] + 1),
+                };
+
+                i += 1;
+            }
+        }
+        dp[dp.len() - 1]
+    }
+}
+```
+
+## 55. Jump Game
+```rs
+impl Solution {
+  pub fn can_jump(nums: Vec<i32>) -> bool {
+      if nums.len() == 0 {
+        return false;
+      }
+
+      let mut dp = vec![-1; nums.len()];
+      
+      dp[0] = nums[0];
+
+      let mut i = 1;
+
+      while i < dp.len() {
+        if dp[i - 1] > 0 {
+          dp[i] = (dp[i - 1] - 1).max(nums[i]);
+        } 
+        i += 1;
+      }
+
+      dp[dp.len() - 1] != -1
+  }
+}
+```
+贪心
+```rs
+impl Solution {
+  pub fn can_jump(nums: Vec<i32>) -> bool {
+      if nums.len() == 0 {
+        return false;
+      }
+      let mut i = 0;
+      let mut cur = 0;
+      while i < nums.len() {
+        if cur < i {
+          return false;
+        }
+        cur = cur.max(i + nums[i] as usize);
+        i += 1;
+      }
+      true
+  }
+}
+```
+
+## 45. Jump Game II
+```rs
+impl Solution {
+  pub fn jump(nums: Vec<i32>) -> i32 {
+      let (mut cur, mut next, mut ans, mut i) = (0, 0, 0, 0);
+      if nums.len() < 2 {
+        return ans
+      } 
+      while i < nums.len() {
+        next = next.max(nums[i] as usize + i);
+        if i == cur {
+          ans += 1;
+          if next >= nums.len() - 1 {
+            break;
+          } else {
+            cur = next;
+          }
+        }
+        i += 1;
+      }
+      ans
+  }
+}
+```
+
+## 101. Symmetric Tree
+```rs
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    pub fn is_symmetric(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        match root {
+          None => true,
+          Some(ref root) => {
+            let root = root.borrow();
+            Solution::is_same(root.left.clone(), root.right.clone())
+          }    
+        }
+    }
+    fn is_same(left: Option<Rc<RefCell<TreeNode>>>, right: Option<Rc<RefCell<TreeNode>>>) -> bool {
+      match (left, right) {
+        (None, None) => true,
+        (Some(_), None) | (None, Some(_)) => false,
+        (Some(l), Some(r)) => {
+          let l = l.borrow();
+          let r = r.borrow();
+          l.val == r.val && Solution::is_same(l.left.clone(), r.right.clone()) && Solution::is_same(l.right.clone(), r.left.clone())
+        }
+      }
+    }
+}
+```
+
+## 226. Invert Binary Tree
+```cpp
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if (root == NULL) return NULL;
+        TreeNode* temp = root->left;
+        root->left = invertTree(root->right);
+        root->right = invertTree(temp);
+        return root;
     }
 };
 ```
