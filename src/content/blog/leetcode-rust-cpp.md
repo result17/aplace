@@ -555,3 +555,54 @@ public:
     }
 };
 ```
+
+## 300. Longest Increasing Subsequence
+```rs
+impl Solution {
+  pub fn length_of_lis(nums: Vec<i32>) -> i32 {
+      let len = nums.len();
+      let mut lis = vec![0; len];
+      let mut size: usize = 0;
+      for num in nums {
+        let mut l = 0;
+        let mut r = size;
+        while l < r {
+          let mut mid = l + (r - l) / 2;
+          if lis[mid] < num {
+            l = mid + 1;
+          } else {
+            r = mid;
+          }
+        }
+        lis[l] = num;
+        if l == size {
+          size += 1;
+        }
+      }
+      size as i32
+  }
+}
+```
+
+## 108. Convert Sorted Array to Binary Search Tree
+```rs
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+        Solution::build_tree(&nums, 0, nums.len() - 1)
+    }
+    fn build_tree(nums: &Vec<i32>, left: usize, right: usize) -> Option<Rc<RefCell<TreeNode>>> {
+      if nums.len() == 0 || left > right {
+        return None;
+      }
+      let mid = left + (right - left) / 2;
+      let mut node = TreeNode::new(nums[mid]);
+      if mid >= 1 {
+        node.left = Solution::build_tree(nums, left, mid - 1);
+      }
+      node.right = Solution::build_tree(nums, mid + 1, right);
+      Some(Rc::new(RefCell::new(node)))
+    }
+}
+```
