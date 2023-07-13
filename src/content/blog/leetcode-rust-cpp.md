@@ -606,3 +606,57 @@ impl Solution {
     }
 }
 ```
+
+## 105. Construct Binary Tree from Preorder and Inorder Traversal
+```rs
+use std::rc::Rc;
+use std::cell::RefCell;
+
+impl Solution {
+    pub fn build_tree(preorder: Vec<i32>, inorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+      Solution::build(preorder.as_slice(), inorder.as_slice())
+    }
+    fn build(preorder: &[i32], inorder: &[i32]) -> Option<Rc<RefCell<TreeNode>>> {
+      let len = preorder.len();
+      if len == 0 {
+        return None
+      }
+      let val = preorder[0];
+      let mut node = TreeNode::new(val);
+
+      let in_split = inorder.split(|num| *num == val).collect::<Vec<&[i32]>>();
+      // = 很重要避免in_split[0].len() = 0 导致运行出错
+      node.right = Solution::build(in_split[0], &preorder[1..=in_split[0].len()]);
+      
+      node.right = Solution::build(in_split[1], &preorder[in_split[0].len() + 1..]);
+
+      Some(Rc::new(RefCell::new(node)))
+    }
+}
+```
+
+## 106. Construct Binary Tree from Inorder and Postorder Traversal
+```rs
+use std::rc::Rc;
+use std::cell::RefCell;
+
+impl Solution {
+    pub fn build_tree(inorder: Vec<i32>, postorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+      Solution::build(inorder.as_slice(), postorder.as_slice())
+    }
+    fn build(inorder: &[i32], postorder: &[i32]) -> Option<Rc<RefCell<TreeNode>>> {
+      let len = postorder.len();
+      if len == 0 {
+        return None
+      }
+      let val = postorder[postorder.len() - 1];
+      let mut node = TreeNode::new(val);
+
+      let in_split = inorder.split(|num| *num == val).collect::<Vec<&[i32]>>();
+      node.left = Solution::build(&in_split[0], &postorder[..in_split[0].len()]);
+      node.right = Solution::build(in_split[1], &postorder[in_split[0].len()..postorder.len() - 1]);
+
+      Some(Rc::new(RefCell::new(node)))
+    }
+}
+```
