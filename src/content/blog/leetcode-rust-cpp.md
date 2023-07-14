@@ -742,3 +742,29 @@ impl Solution {
     }
 }
 ```
+
+## 1049. Last Stone Weight II
+```rs
+impl Solution {
+    pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {
+        let sum = stones.iter().fold(0, |acc, cur| acc + cur);
+        let target = sum / 2;
+        let mut i = 0;
+        let mut j = 0;
+        let mut dp = vec![0; (target + 1) as usize];
+
+        while i < stones.len() {
+            j = target;
+            while j >= stones[i] {
+                let diff = (j - stones[i]) as usize;
+                let tmp = dp[diff] + stones[i];
+                dp[j as usize] = dp[j as usize].max(tmp);
+                j -= 1;
+            }
+            i += 1;
+        }
+
+        (sum - dp[dp.len() - 1] * 2)
+    }
+}
+```
