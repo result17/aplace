@@ -660,3 +660,29 @@ impl Solution {
     }
 }
 ```
+
+## 209. Minimum Size Subarray Sum
+```rs
+impl Solution {
+    pub fn min_sub_array_len(target: i32, nums: Vec<i32>) -> i32 {
+        let mut ans = nums.len() + 1;
+        let mut left = 0;
+        let mut right = 0;
+        let mut sum = 0;
+        while right < nums.len() {
+            sum += nums[right];
+            while left <= right && sum >= target {
+                ans = ans.min(right - left + 1);
+                sum -= nums[left];
+                left += 1;
+            }
+            right += 1;
+        }
+        match ans > nums.len() {
+          true => 0,
+          false => ans as i32,
+        }
+    }
+}
+
+```
