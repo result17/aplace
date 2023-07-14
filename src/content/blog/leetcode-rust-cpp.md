@@ -686,3 +686,59 @@ impl Solution {
 }
 
 ```
+
+## 416. Partition Equal Subset Sum
+01 背包
+```rs
+impl Solution {
+    pub fn can_partition(nums: Vec<i32>) -> bool {
+        let sum = nums.iter().fold(0 , |acc, cur| acc + cur );
+        if sum % 2 == 1 {
+            return false;
+        }
+        let target = sum / 2;
+        let mut i = 0;
+        let mut j = 0;
+        let mut dp = vec![0; (target + 1) as usize];
+
+        while i < nums.len() {
+            j = target;
+            while j >= nums[i] {
+                let diff = (j - nums[i]) as usize;
+                let tmp = dp[diff] + nums[i];
+                dp[j as usize] = dp[j as usize].max(tmp);
+                j -= 1;
+            }
+            i += 1;
+        }
+
+        dp[dp.len() - 1] == target
+    }
+}
+```
+```rs
+impl Solution {
+    pub fn can_partition(nums: Vec<i32>) -> bool {
+        let sum = nums.iter().fold(0 , |acc, cur| acc + cur );
+        if sum % 2 == 1 {
+            return false;
+        }
+        let target = sum / 2;
+        let mut i = 0;
+        let mut j = 0;
+        let mut dp = vec![false; (target + 1) as usize];
+        dp[0] = true;
+        while i < nums.len() {
+            j = target;
+            while j >= nums[i] {
+                let diff = (j - nums[i]) as usize;
+                dp[j as usize] = dp[j as usize] || dp[diff];
+                j -= 1;
+            }
+            i += 1;
+        }
+
+        dp[dp.len() - 1]
+    }
+}
+```
