@@ -907,3 +907,27 @@ impl Solution {
     }
 }
 ```
+
+## 77. Combinations
+```rs
+impl Solution {
+    pub fn combine(n: i32, k: i32) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur = Vec::<i32>::new();
+        Solution::get_combine(n + 1, 1, k, &mut ans, & mut cur);
+        ans
+    }
+    fn get_combine(n: i32, start: usize, k: i32, ans: &mut Vec<Vec<i32>>, cur: &mut Vec<i32>) {
+        if k == 0 {
+            let cur = cur.clone();
+            ans.push(cur);
+        } else {
+            for i in start..(n - k + 1) as usize {
+                cur.push(i as i32);
+                Solution::get_combine(n, i + 1, k - 1, ans, cur);
+                cur.pop();
+            }
+        }
+    }
+}
+```
