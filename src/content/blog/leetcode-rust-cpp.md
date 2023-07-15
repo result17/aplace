@@ -832,3 +832,27 @@ impl Solution {
     }
 }
 ```
+
+## 377. Combination Sum IV
+```rs
+impl Solution {
+    pub fn combination_sum4(nums: Vec<i32>, target: i32) -> i32 {
+        let mut dp = vec![0; target as usize + 1];
+        dp[0] = 1;
+        let mut i: i32 = 0;
+        while (i as usize) < dp.len() {
+            let mut j = 0;
+            while j < nums.len() {
+                let diff = i - nums[j];
+                if diff >= 0 {
+                    dp[i as usize] += dp[diff as usize];
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+
+        dp[dp.len() - 1]
+    }
+}
+```
