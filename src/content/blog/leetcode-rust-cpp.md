@@ -856,3 +856,24 @@ impl Solution {
     }
 }
 ```
+
+## 160. Intersection of Two Linked Lists
+```cpp
+class Solution {
+public:
+    ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
+        if (headA == nullptr || headB == nullptr) {
+            return nullptr;
+        }
+        ListNode* i = headA;
+        ListNode* j = headB;
+
+        while (i != j) {
+            i = i == nullptr ? headB : i->next;
+            j = j == nullptr ? headA : j->next;
+        }
+
+        return i;
+    }
+};
+```
