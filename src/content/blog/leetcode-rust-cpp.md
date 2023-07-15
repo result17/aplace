@@ -768,3 +768,67 @@ impl Solution {
     }
 }
 ```
+
+## 494. Target Sum
+01 背包 target_sum需要推导
+```rs
+impl Solution {
+    pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
+        let sum = nums.iter().fold(0, |acc, x| acc + x);
+        let temp = target + sum;
+
+        let target_sum = temp / 2;
+        let len = nums.len();
+
+        if target > sum || temp % 2 == 1 || target_sum + 1 < 0 {
+            return 0;
+        }
+        
+        let mut dp = vec![0; target_sum as usize + 1];
+        dp[0] = 1;
+
+        let mut i = 0;
+        let mut j = 0;
+        while i < len {
+            j = target_sum;
+            while j >= nums[i] {
+                let diff = j - nums[i];
+                dp[j as usize] += dp[diff as usize];
+                j -= 1;
+            }
+            i += 1;
+        }
+
+        dp[dp.len() - 1]
+    }
+}
+```
+
+## 518. Coin Change II
+组合数
+- 外层循环 物品个数
+- 内层循环 背包容量
+```rs
+impl Solution {
+    pub fn change(amount: i32, coins: Vec<i32>) -> i32 {
+        let mut dp = vec![0; amount as usize + 1];
+        dp[0] = 1;
+
+        let mut i = 0;
+
+        while i < coins.len() {
+            let mut j = coins[i];
+            while j < amount + 1 {
+                let diff = j - coins[i];
+                if diff >= 0 {
+                    dp[j as usize] += dp[diff as usize];
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+
+        dp[dp.len() - 1]
+    }
+}
+```
