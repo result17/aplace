@@ -807,7 +807,7 @@ impl Solution {
 ## 518. Coin Change II
 组合数
 - 外层循环 物品个数
-- 内层循环 背包容量
+- 内层循环 背包容量 从小到大
 ```rs
 impl Solution {
     pub fn change(amount: i32, coins: Vec<i32>) -> i32 {
@@ -876,4 +876,34 @@ public:
         return i;
     }
 };
+```
+
+## 39. Combination Sum
+```rs
+impl Solution {
+    pub fn combination_sum(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur = Vec::<i32>::new();
+        Solution::get_sum(&candidates, &mut ans, target, 0, &mut cur);
+        ans
+    }   
+
+    fn get_sum(nums: &Vec<i32>, ans: &mut Vec<Vec<i32>>, target: i32, start: usize, cur: & mut Vec<i32>) {
+        if target < 0 {
+            return;
+        } else if target == 0 {
+            let cur = cur.clone();
+            ans.push(cur);
+        } else {
+            let mut i = start;
+            while i < nums.len() {
+                let n = nums[i];
+                cur.push(n);
+                Solution::get_sum(nums, ans, target - n, i, cur);
+                cur.pop();
+                i += 1;
+            }
+        }
+    }
+}
 ```
