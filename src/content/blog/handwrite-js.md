@@ -248,3 +248,29 @@ class IPromise {
 
 }
 ```
+## curry 函数柯里化
+```ts
+type AnyFunc = (...args: any[]) => any
+
+type Curry<Fn extends AnyFunc> =
+  Parameters<Fn> extends [infer FirstArg, ...infer Rest]
+  ? (arg: FirstArg) => Curry<(...args: Rest) => ReturnType<Fn>>
+  : ReturnType<Fn>
+
+function curry<T extends AnyFunc, TAgg extends unknown[]>(func: T, agg?: TAgg): Curry<T> {
+  const aggregatedArgs = agg ?? []
+  if (func.length === aggregatedArgs.length) return func(...aggregatedArgs)
+  return ((arg: any) => curry(func, [...aggregatedArgs, arg])) as any
+}
+
+function add(a: number, b: number, c: number): number {
+  return a + b + c;
+}
+
+const curriedAdd = curry(add);
+
+const add5 = curriedAdd(5);
+const add5And6 = add5(6);
+console.log(add5And6(7));
+```
+函数定义还是有点小问题
