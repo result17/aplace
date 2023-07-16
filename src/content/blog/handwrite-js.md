@@ -107,3 +107,144 @@ export const hasOwn = (
   key: string | symbol
 ): key is keyof typeof val => hasOwnProperty.call(val, key)
 ```
+
+## NaN !== NaN
+```ts
+const a = NaN;
+const b = a
+// false
+console.log(a === b)
+```
+
+## Promise
+```ts
+enum IPromiseState {
+  Pending,
+  Fulfilled,
+  Rejected,
+}
+
+const runAsync = (cb: () => void) => {
+  setTimeout(cb, 0);
+};
+
+const isThenable = (obj: any): obj is IPromise => {
+  return typeof obj?.then === "function";
+};
+
+type Handler = {
+  handleOnFulfilled: (value?: any) => void;
+  handleOnRejected: (reason?: any) => void;
+}
+
+class IPromise {
+  private state: IPromiseState = IPromiseState.Pending
+
+  private result?: any
+
+  private handlersList: Handler[] = [];
+
+  constructor(
+    executor: (
+      resolve: (val: any) => void,
+      reject: (reason: any) => void
+    ) => void
+  ) {
+    try {
+      executor(this.resolve, this.reject)
+    } catch (error) {
+      console.log(error)
+      this.reject(error)
+    }
+  }
+
+  private setResultAndState(value: any, state: IPromiseState) {
+    if (this.state !== IPromiseState.Pending) {
+      throw new Error("Promise is not pending.")
+    }
+    if (isThenable(value)) {
+      value.then(this.resolve, this.reject);
+      return;
+    }
+    this.result = value
+    this.state = state
+    this.executorHandlers()
+  }
+
+  private resolve = (val: any | IPromise) => {
+    this.setResultAndState(val, IPromiseState.Fulfilled)
+  }
+
+  private reject = (reason?: any) => {
+    this.setResultAndState(reason, IPromiseState.Rejected)
+  }
+
+  private executorHandlers = () => {
+    if (this.state === IPromiseState.Pending) {
+      throw new Error("Promise is pending, when executing handlers.")
+    }
+
+    runAsync(() => {
+      for (const handler of this.handlersList) {
+        const isFulFilled = this.state === IPromiseState.Fulfilled
+        isFulFilled ? handler.handleOnFulfilled(this.result) : handler.handleOnRejected(this.result)
+      }
+      this.handlersList.length = 0
+    })
+    
+  }
+  
+  then(
+    onFullfilled?: (value: any) => any | IPromise,
+    onRejected?: (reason: any) => any | IPromise
+  ) {
+    return new IPromise((resolve: any, reject: any) => {
+      const handler: Handler = {
+        handleOnFulfilled: (value: any) => {
+          if (!onFullfilled || typeof onFullfilled !== 'function') {
+            resolve(value)
+          } else {
+            try {
+              resolve(onFullfilled(value as any))
+            } catch (error) {
+              reject(error)
+            }
+          }
+        },
+        handleOnRejected: (reason: any) => {
+          if (!onRejected || typeof onRejected !== "function") {
+            reject(reason)
+          } else {
+            try {
+              resolve(onRejected(reason as any | IPromise))  
+            } catch (error) {
+              reject(error)
+            }
+          }
+        }
+      }
+
+      this.handlersList.push(handler)
+      this.executorHandlers()
+    })
+  }
+
+  catch(onRejected) {
+    this.then(undefined, onRejected)
+  }
+  
+  finally(onFinally: () => void) {
+    this.then(
+      (value) => {
+        onFinally()
+        return value
+      },
+      (reason) => {
+        onFinally()
+        throw reason
+      }
+    )
+  }
+
+}
+```
