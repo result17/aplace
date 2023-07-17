@@ -330,3 +330,122 @@ export class EventBus implements IEventBus {
   }
 }
 ```
+
+## this指向
+在非严格模式， 函数执行时没有明确执行上下文，则会指向全局对象（浏览器window, Node或Deno指向Global）
+在严格模式，this找不到会报undefined错误
+
+## instanceof
+```ts
+const instanceOf = (left: Object, right: Function): boolean => {
+  if (typeof left !== 'object' || left === null) return false
+  let proto = Object.getPrototypeOf(left)
+  while (true) {
+    if (proto === null) return false
+    if (proto === right.prototype) return true
+    proto = Object.getPrototypeOf(proto)
+  }
+}
+```
+
+## call
+```ts
+type AnyFnc = (...args: any[]) => any
+
+const iCall = <T extends AnyFnc>(fn: T, context: Object, ...args: any[]): ReturnType<T> => {
+  const uKey = Symbol('fn')
+  context[uKey] = fn
+  const result = context[uKey](...args)
+  delete result[uKey]
+  return result
+}
+```
+
+## apply
+```ts
+type AnyFnc = (...args: any[]) => any
+
+const iApply = <T extends AnyFnc>(fn: T, context: Object, args: any[]): ReturnType<T> => {
+  const uKey = Symbol('fn')
+  context[uKey] = fn
+  const result = context[uKey](...args)
+  delete result[uKey]
+  return result
+}
+```
+## bind
+Object.setPrototypeOf() 静态方法可以将一个指定对象的原型（即内部的 [[Prototype]] 属性）设置为另一个对象或者 null。
+```js
+Function.prototype.bind = function (context, ...args) {
+  if (typeof this !== "function") {
+    throw new Error("Type Error");
+  }
+  // 保存this的值
+  const self = this;
+
+  function F() {
+    // 考虑new的情况
+    if (this instanceof F) {
+      return self.call(this, ...args, ...arguments);
+    }
+    return self.apply(context, [...args, ...arguments]);
+  }
+
+  Object.setPrototypeOf(F.prototype, self.prototype);
+  return F;
+};
+
+function Point(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+Point.prototype.toString = function () {
+  return this.x + "," + this.y;
+};
+
+var p = new Point(1, 2);
+p.toString(); // '1,2'
+
+var emptyObj = {};
+var YAxisPoint = Point.bind(emptyObj, 0 /*x*/);
+// 以下这行代码在 polyfill 不支持,
+// 在原生的bind方法运行没问题:
+//(译注：polyfill的bind方法如果加上把bind的第一个参数，即新绑定的this执行Object()来包装为对象，Object(null)则是{}，那么也可以支持)
+var YAxisPoint = Point.bind(null, 0 /*x*/);
+
+var axisPoint = new YAxisPoint(5);
+
+console.log(axisPoint instanceof Point); // true
+console.log(axisPoint instanceof YAxisPoint);
+console.log(axisPoint.toString());
+
+```
+```js
+Function.prototype.bind = function(content) {
+    if(typeof this != "function") {
+        throw Error("not a function")
+    }
+    // 若没问参数类型则从这开始写
+    let fn = this;
+    let args = [...arguments].slice(1);
+    
+    let resFn = function() {
+        return fn.apply(this instanceof resFn ? this : content,args.concat(...arguments) )
+    }
+    function tmp() {}
+    tmp.prototype = this.prototype;
+    resFn.prototype = new tmp();
+    
+    return resFn;
+}
+```
+
+## Object.create 
+```js
+const create = function (obj) {
+  function F() {}
+  F.prototype = obj;
+  return new F();
+}
+```
