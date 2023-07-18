@@ -931,3 +931,38 @@ impl Solution {
     }
 }
 ```
+
+## 113. Path Sum II
+```cpp
+class Solution {
+public:
+    vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
+        vector<vector<int>> ans;
+        vector<int> cur;
+        travel(root, targetSum, ans, cur);
+        return ans;
+    }
+private:
+    void travel(TreeNode* root, int target, vector<vector<int>> &ans, vector<int> &cur) {
+        if (root == NULL) return;
+        target -= root->val;
+        cur.push_back(root->val);
+        if (target == 0 && isLeaf(root)) {
+            ans.push_back(cur);
+        }
+        travel(root->left, target, ans, cur);
+        travel(root->right, target, ans, cur);
+        cur.pop_back();
+    }
+
+    bool isLeaf(TreeNode* root) {
+        if (root == NULL) return false;
+        return root->left == NULL && root->right == NULL;
+    }
+};
+```
+
+## 496
+
+
+## 739
