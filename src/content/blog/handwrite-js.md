@@ -449,3 +449,38 @@ const create = function (obj) {
   return new F();
 }
 ```
+## deepClone
+```js
+function deepClone(source) {
+  let target = Object.create(
+    Object.getPrototypeOf(source)
+  )
+
+  let stack = [{
+    target,
+    source
+  }]
+  const sourceMap = new Map()
+  Map.set(source, target)
+  while (stack.length) {
+    let { target, source } = stack.pop()
+    for (let prop of Object.getOwnPropertyNames(source)) {
+      const val = source[prop]
+      if (typeof val === 'object' && val !== null) {
+        if (sourceMap.has(val)) {
+          target[prop] = sourceMap.get(val)
+        } else {
+          target[prop] = {}
+          sourceMap.set(target[prop], val)
+          stack.push({
+            target: target[prop],
+            source: val
+          })
+        }
+      } else {
+        target[prop] = val
+      }
+    }
+  }
+}
+```

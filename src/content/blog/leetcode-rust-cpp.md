@@ -961,6 +961,26 @@ private:
     }
 };
 ```
+## 11. Container With Most Water
+```rs
+impl Solution {
+  pub fn max_area(height: Vec<i32>) -> i32 {
+      let mut ans = 0;
+      let mut l = 0;
+      let mut r = height.len() - 1;
+      while l < r {
+        let cur_area = (height[l].min(height[r])) as usize * (r - l);
+        ans = ans.max(cur_area);
+        if height[l] < height[r] {
+          l += 1;
+        } else {
+          r -= 1;
+        }
+      }
+      ans as i32
+  }
+}
+```
 
 ## 496
 
