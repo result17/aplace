@@ -110,3 +110,29 @@ Object.prototype.toString.call 用于获取变量的字符串表示，其返回�
 - "[object Symbol]"：表示变量是Symbol。
 - "[object Null]"：表示变量是null。
 
+## 写一个 mySetInterVal(fn, a, b),每次间隔 a,a+b,a+2b 的时间，然后写一个 myClear，停止上面的 mySetInterVal
+```ts
+const start = Date.now()
+
+const mySetInterVal = (fn: Function, a: number, b: number) => {
+  if (a < 0 || b < 0) throw new Error('Time Error')
+  let timer: number | null = null;
+  const task = (timeOut: number) => {
+    timer = setTimeout(() => {
+      fn()
+      task(timeOut + b)
+      console.log(`Duration is ${(Date.now() - start) / 1000}`)
+    }, timeOut)
+  }
+  task(a)
+  return () => clearTimeout(timer)
+}
+
+const clearFn = mySetInterVal(() => console.log('timeout'), 1000, 1000)
+
+setTimeout(() => {
+  clearFn()
+  console.log(`Duration is ${(Date.now() - start) / 1000}. END!`)
+}, 7000)
+
+```

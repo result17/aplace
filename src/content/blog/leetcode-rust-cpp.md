@@ -1044,3 +1044,29 @@ impl Solution {
   }
 }
 ```
+
+## 88. Merge Sorted Array
+坑点是因为是原地构建数组，所以思路先把后面0变为有序数组，避免从前遍历会覆盖nums1的值。
+```rs
+impl Solution {
+  pub fn merge(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n: i32) {
+    let mut x = m - 1;
+    let mut y = n - 1;
+    let mut i = m + n - 1;
+    while x >= 0 && y >= 0 {
+      nums1[i as usize] = nums1[x as usize].max(nums2[y as usize]);
+      if nums1[x as usize] > nums2[y as usize] {
+        x -= 1;
+      } else {
+        y -= 1;
+      }
+      i -= 1;
+    }
+    while y >= 0 {
+      nums1[i as usize] = nums2[y as usize];
+      y -= 1;
+      i -= 1;
+    }
+  }
+}
+```
