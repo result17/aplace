@@ -1015,4 +1015,32 @@ impl Solution {
 ## 496
 
 
-## 739
+## 739. Daily Temperatures
+```rs
+impl Solution {
+  pub fn daily_temperatures(temperatures: Vec<i32>) -> Vec<i32> {
+      let len = temperatures.len();
+      let mut ans = vec![0; len];
+      let mut stack = Vec::<usize>::new();
+      stack.push(0);
+      let mut i = 0;
+
+      while i < len {
+        let temperature = temperatures[i];
+        
+        while stack.len() > 0 && temperature > temperatures[stack[stack.len() - 1]] {
+          // 维护单调递减stack // 75 71 69 72
+          match stack.pop() {
+            None => unreachable!("stack.len() must > 0"),
+            Some(index) => {
+              ans[index] = (i - index) as i32;
+            }
+          }
+        }
+        stack.push(i);
+        i += 1;
+      }
+      ans
+  }
+}
+```
