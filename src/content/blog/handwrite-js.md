@@ -375,6 +375,13 @@ const iApply = <T extends AnyFnc>(fn: T, context: Object, args: any[]): ReturnTy
 ```
 ## bind
 Object.setPrototypeOf() 静态方法可以将一个指定对象的原型（即内部的 [[Prototype]] 属性）设置为另一个对象或者 null。
+
+Object.setPropertyOf 和 Object.create 的差别在于：
+
+- Object.setPropertyOf，给我两个对象，我把其中一个设置为另一个的原型。
+
+- Object.create，给我一个对象，它将作为我创建的新对象的原型。
+
 ```js
 Function.prototype.bind = function (context, ...args) {
   if (typeof this !== "function") {
@@ -388,7 +395,7 @@ Function.prototype.bind = function (context, ...args) {
     if (this instanceof F) {
       return self.call(this, ...args, ...arguments);
     }
-    return self.apply(context, [...args, ...arguments]);
+    return self.call(context, ...args, ...arguments);
   }
 
   Object.setPrototypeOf(F.prototype, self.prototype);
@@ -482,5 +489,27 @@ function deepClone(source) {
       }
     }
   }
+}
+```
+
+## 原型链
+原型也是一个对象，所以它也具有自己的原型，以此往复直至null。
+所有对象都有原型，所有函数都有prototype。
+
+## 隐式原型继承
+```ts
+const create = (proto: Object) => {
+  function temp() {}
+  temp.prototype = proto
+  return new temp()
+}
+```
+
+## 显式原型继承
+```ts
+const createInstance = (constructor: Function, ...args: any[]): Object => {
+  const instance = Object.create(constructor.prototype)
+  constructor.call(instance, ...args)
+  return instance
 }
 ```
