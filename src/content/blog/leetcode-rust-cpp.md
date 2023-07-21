@@ -982,6 +982,36 @@ impl Solution {
 }
 ```
 
+## 42. Trapping Rain Water
+```rs
+impl Solution {
+  pub fn trap(height: Vec<i32>) -> i32 {
+      let len = height.len();
+      if len < 2 {
+        return  0;
+      }
+      let mut left = 0;
+      let mut right = len - 1;
+      let mut ans = 0;
+      let mut max_left = height[left];
+      let mut max_right = height[right];
+      
+      while left < right {
+         if height[left] < height[right] {
+          ans += max_left.min(max_right) - height[left];
+          left += 1;
+          max_left = max_left.max(height[left]); 
+         } else {
+          ans += max_left.min(max_right) - height[right];
+          right -= 1;
+          max_right = max_right.max(height[right]);
+         } 
+      }
+      ans
+  }
+}
+```
+
 ## 496
 
 
