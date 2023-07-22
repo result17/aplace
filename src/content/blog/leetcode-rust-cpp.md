@@ -65,15 +65,23 @@ impl Solution {
 ```rs
 impl Solution {
   pub fn length_of_longest_substring(s: String) -> i32 {
-      let mut ans = 0;
-      let mut chars: [usize; 128] = [0; 128];
-      let mut start = 0;
-      for (end, ch) in s.chars().enumerate() {
-        start = start.max(chars[ch as usize]);
-        ans = ans.max(end - start + 1);
-        chars[ch as usize] = end + 1;
-      }
-      ans as i32
+     let mut record = vec![0; 128];
+     let mut i = 0;
+     let bytes = s.as_bytes();
+     let mut ans = 0;
+     let mut start = 0;
+     while i < s.len() {
+      let char = bytes[i];
+      // record 记录出现的索引
+      let last_index_after = record[char as usize];
+      // 出现重复字符后就要从重复字符后一位开始计算子串
+      start = start.max(last_index_after);
+      ans = ans.max(i - start + 1);
+      // 保存的是该字符后一位的索引
+      record[char as usize] = i + 1;
+      i += 1;
+     }
+     ans as i32
   }
 }
 ```

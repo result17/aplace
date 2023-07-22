@@ -491,11 +491,6 @@ function deepClone(source) {
   }
 }
 ```
-
-## 原型链
-原型也是一个对象，所以它也具有自己的原型，以此往复直至null。
-所有对象都有原型，所有函数都有prototype。
-
 ## 隐式原型继承
 ```ts
 const create = (proto: Object) => {
