@@ -508,3 +508,80 @@ const createInstance = (constructor: Function, ...args: any[]): Object => {
   return instance
 }
 ```
+## 初级排序
+```ts
+const source = [7, 64, 25, 12, 22, 11];
+
+const swap = (arr: number[], i: number, j: number) => {
+  let temp = arr[j]
+  arr[j] = arr[i]
+  arr[i] = temp
+  return arr
+}
+
+// 相邻元素进行比较 有序的子数组出现在数组结尾
+const bubbleSort = (src: number[]) => {
+  let i = 0;
+  let len = src.length;
+  while (i < len) {
+    let j = 0;
+    while (j < len - i - 1) {
+      if (src[j] > src[j + 1]) {
+        swap(src, j, j + 1)
+      }
+      j++;
+    }
+    i++;
+  }
+  return src
+}
+
+// 特定索引元素进行比较更新索引 有序的子数组出现在数组开头或开头，交换最多n次
+const selectSort = (src: number[]) => {
+  let i = 0;
+  let len = src.length;
+  while (i < len) {
+    let minIdx = i;
+    let j = i + 1;
+    while (j < len) {
+      if (src[minIdx] > src[j]) {
+        minIdx = j;
+      }
+      j++;
+    }
+    swap(src, minIdx, i)
+    i++;
+  }
+  return src
+}
+
+const insertSort = (src: number[]) => {
+  let i = 1;
+  let len = src.length;
+  while (i < len) {
+    let j = i - 1;
+    let n = src[i];
+    while (j >= 0 && n < src[j]) {
+      src[j + 1] = src[j]
+      j--;
+    }
+    swap(src, i, j + 1)
+    i++;
+  }
+  return src
+}
+
+console.log(bubbleSort(source))
+console.log(selectSort(source))
+console.log(insertSort(source))
+```
+
+冒泡排序、选择排序和插入排序都是简单的排序算法，它们的时间复杂度都是O(n^2)，在处理大规模数据时效率较低。但是在某些特定情况下，它们的性能可能会比较好。
+
+冒泡排序的优点是代码实现简单，容易理解。但是其时间复杂度较高，尤其是在数据规模较大时，效率明显下降，所以不太适合处理大规模数据。
+
+选择排序的优点是交换次数比较少，每次只需要交换一次，因此适合于数据移动较为昂贵的场景。但是选择排序的比较次数较多，因此在数据比较次数较为昂贵的场景中，选择排序的效率就会比较低。
+
+插入排序的优点是比较次数比较少，每次只需要比较相邻的两个元素，因此适合于数据比较次数较为昂贵的场景。而且插入排序对于部分有序的数据集合，排序的时间复杂度会比较低。但是插入排序的移动次数较多，因此在数据移动次数较为昂贵的场景中，插入排序的效率就会比较低。
+
+因此，冒泡排序、选择排序和插入排序各有优劣，取决于具体的应用场景和数据特征。在实际应用中，我们需要根据具体的情况选择合适的排序算法。如果需要高效排序大规模数据，可以考虑使用更高效的排序算法，如快速排序、归并排序、堆排序等。
