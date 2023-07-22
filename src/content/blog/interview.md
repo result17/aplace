@@ -1,3 +1,14 @@
+---
+author: cosin
+pubDatetime: 2023-07-23T03:58:38+08:00 
+title: 面试题目合集
+postSlug: interview
+featured: true
+tags:
+  - release
+description: 前端面试题
+---
+
 ## 闭包
 - 能够读取其他函数内部变量的函数
 - 函数内部创建另一个函数
