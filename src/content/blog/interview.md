@@ -169,3 +169,18 @@ setTimeout(() => {
 网际层（Internet Layer）：负责为数据包选择最佳的路径，并将其从源主机发送到目标主机。
 传输层（Transport Layer）：负责在源主机和目标主机之间建立端到端的连接，并提供可靠的数据传输服务。
 应用层（Application Layer）：提供各种网络应用程序，如电子邮件、文件传输和远程登录等。
+
+## 非受控组件
+在React中，非受控组件（uncontrolled components）是指表单元素的值不受React组件的state或props变化控制的组件。相反，表单元素的值由DOM自身维护。
+
+## useEffect和useLayoutEffect区别
+在React中，useEffect和useLayoutEffect都是用于处理副作用的Hooks，但它们在执行时机和优先级上存在一些区别。
+
+执行时机：
+useEffect会在组件渲染完成后异步执行，而useLayoutEffect会在组件渲染完成后同步执行。
+
+优先级：
+useEffect的优先级较低，它不会阻塞浏览器渲染，因此可能会出现闪烁等问题。而useLayoutEffect的优先级较高，它会在浏览器渲染前同步执行，因此可以确保副作用的执行在浏览器渲染之前完成，避免出现闪烁等问题。
+
+使用场景：
+一般来说，当需要对DOM进行操作时，优先考虑使用useLayoutEffect，因为它可以确保DOM操作在浏览器渲染前完成，避免出现闪烁等问题。而当需要进行异步操作时，可以使用useEffect。
