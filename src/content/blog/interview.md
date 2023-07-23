@@ -184,3 +184,39 @@ useEffect的优先级较低，它不会阻塞浏览器渲染，因此可能会�
 
 使用场景：
 一般来说，当需要对DOM进行操作时，优先考虑使用useLayoutEffect，因为它可以确保DOM操作在浏览器渲染前完成，避免出现闪烁等问题。而当需要进行异步操作时，可以使用useEffect。
+
+## JSX.Element VS ReactNode VS ReactElement
+```ts
+type ReactNode = ReactChild | ReactFragment | ReactPortal | boolean | null | undefined;
+type ReactChild = ReactElement | ReactText;
+
+type ReactText = string | number;
+interface ReactElement<P = any, T extends string | JSXElementConstructor<any> = string | JSXElementConstructor<any>> {
+        type: T;
+        props: P;
+        key: Key | null;
+  }
+declare global {
+    namespace JSX {
+        interface Element extends React.ReactElement<any, any> { }
+        }
+    }
+
+export namespace JSX {
+  export interface Element extends VNode {}
+  export interface ElementClass {
+    $props: {}
+  }
+  export interface ElementAttributesProperty {
+    $props: {}
+  }
+  export interface IntrinsicElements extends NativeElements {
+    // allow arbitrary elements
+    // @ts-ignore suppress ts:2374 = Duplicate string index signature.
+    [name: string]: any
+  }
+  export interface IntrinsicAttributes extends ReservedProps {}
+}
+
+```
+jsx.Element在react中ReactElement，在vue为Vnode
