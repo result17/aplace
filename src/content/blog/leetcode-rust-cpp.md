@@ -1142,3 +1142,38 @@ impl Solution {
   }
 }
 ```
+## 47. Permutations II
+```rs
+impl Solution {
+    pub fn permute_unique(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur: Vec<i32> = Vec::<i32>::new();
+        let mut nums = nums;
+        let len = nums.len();
+        nums.sort();
+        let mut is_used = vec![false; len];
+        Solution::backtrack_unique(&mut ans, & nums, &mut cur, &mut is_used);
+        ans
+    }
+    fn backtrack_unique(ans: &mut Vec<Vec<i32>>, nums: & Vec<i32>, cur: &mut Vec<i32>, is_used: &mut Vec<bool>) {
+        let len = nums.len();
+        if cur.len() == len {
+            ans.push(cur.clone());
+            return;
+        }
+        let mut i = 0;
+        while i < len {
+            if (i > 0 && nums[i] == nums[i - 1] && is_used[i - 1] == false) || is_used[i] == true {
+                 i += 1;
+                 continue;
+            }
+            cur.push(nums[i]);
+            is_used[i] = true;
+            Solution::backtrack_unique(ans, nums, cur, is_used);
+            cur.pop();
+            is_used[i] = false;
+            i += 1;
+        }
+    }
+}
+```
