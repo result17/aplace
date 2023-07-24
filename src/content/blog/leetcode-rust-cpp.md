@@ -1177,3 +1177,69 @@ impl Solution {
     }
 }
 ```
+## 39. Combination Sum
+```rs
+impl Solution {
+    pub fn combination_sum(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur = Vec::<i32>::new();
+        Solution::backtrack(&mut ans, &mut cur, &candidates, 0, target);
+        ans
+    }
+    fn backtrack(ans: &mut Vec<Vec<i32>>, cur: &mut Vec<i32>, candidates: &Vec<i32>, begin: usize, target: i32) {
+        if target < 0 {
+            return
+        } else if target == 0 {
+            ans.push(cur.clone());
+            return
+        } else {
+            let mut i = begin;
+            while i < candidates.len() {
+                let val = candidates[i];
+                cur.push(val);
+                Solution::backtrack(ans, cur, candidates, i,target - val);
+                cur.pop();
+                i += 1;
+            }
+        }
+    }
+}
+```
+
+## 40. Combination Sum II
+```rs
+impl Solution {
+    pub fn combination_sum2(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur = Vec::<i32>::new();
+        let mut candidates = candidates;
+        candidates.sort();
+        let mut is_used = vec![false; candidates.len()];
+        Solution::backtrack(&mut ans, &mut cur, &candidates, &mut is_used, 0, target);
+        ans
+    }
+    fn backtrack(ans: &mut Vec<Vec<i32>>, cur: &mut Vec<i32>, candidates: &Vec<i32>, is_used: &mut Vec<bool>, begin: usize, target: i32) {
+        if target < 0 {
+            return
+        } else if target == 0 {
+            ans.push(cur.clone());
+            return
+        } else {
+            let mut i = begin;
+            while i < candidates.len() {
+                if (i > 0 && candidates[i] == candidates[i - 1] && is_used[i - 1] == false) || is_used[i] == true {
+                    i += 1;
+                    continue
+                }
+                let val = candidates[i];
+                cur.push(val);
+                is_used[i] = true;
+                Solution::backtrack(ans, cur, candidates, is_used, i + 1, target - val);
+                is_used[i] = false;
+                cur.pop();
+                i += 1;
+            }
+        }
+    }
+}
+```
