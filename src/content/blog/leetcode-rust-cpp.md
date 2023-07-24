@@ -1109,3 +1109,36 @@ impl Solution {
   }
 }
 ```
+## 46. Permutations
+```rs
+impl Solution {
+  pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
+      let mut ans = Vec::<Vec<i32>>::new();
+      let mut cur = Vec::<i32>::new();
+      for num in nums {
+        cur.push(num)
+      }
+      Solution::backtrack(&mut ans, &mut cur, 0);
+      ans
+  }
+  fn backtrack(ans: &mut Vec<Vec<i32>>, cur: &mut Vec<i32>, begin: usize) {
+    if begin == cur.len() {
+      ans.push(cur.clone());
+      return
+    }
+    let mut i = begin;
+    while i < cur.len() {
+      Solution::swap(cur, i, begin);
+      Solution::backtrack(ans, cur, begin + 1);
+      Solution::swap(cur, begin, i);
+      i += 1;
+    }
+  }
+
+  fn swap(cur: &mut Vec<i32>, i: usize, j: usize) {
+    let temp = cur[j];
+    cur[j] = cur[i];
+    cur[i] = temp;
+  }
+}
+```
