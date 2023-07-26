@@ -220,3 +220,34 @@ export namespace JSX {
 
 ```
 jsx.Element在react中ReactElement，在vue为Vnode
+
+## script 标签 async defer
+
+## 事件循环
+
+## react生命周期
+[react生命周期](https://postimg.cc/dhxXhq9P)
+
+## react class instance与fiber关系
+_reactInternals 属性来访问组件对应的 fiber 对象。在 fiber 对象上，可以通过 stateNode 来访问当前 fiber 对应的组件实例
+
+## React.PureComponent 注意事项
+### 避免使用箭头函数。
+```jsx
+class Index extends React.PureComponent{}
+
+export default class Father extends React.Component{
+    render=()=> <Index callback={()=>{}}   />
+}
+
+```
+###  PureComponent 的父组件是函数组件的情况，绑定函数要用 useCallback 或者 useMemo 处理。
+```jsx
+
+class Index extends React.PureComponent{}
+export default function (){
+    const callback = function handerCallback(){} /* 每一次函数组件执行重新声明一个新的callback，PureComponent浅比较会认为不想等，促使组件更新  */
+    return <Index callback={callback}  />
+}
+
+```
