@@ -1243,3 +1243,64 @@ impl Solution {
     }
 }
 ```
+
+## 78. Subsets
+```rs
+impl Solution {
+    pub fn subsets(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur = Vec::<i32>::new();
+        Solution::backtrack(&mut ans, &mut cur, &nums, 0);
+        ans
+    }
+    fn backtrack(ans: &mut Vec<Vec<i32>>, cur: &mut Vec<i32>, nums: &Vec<i32>, begin: usize) {
+        ans.push(cur.clone());
+        if begin >= nums.len() {
+            return;
+        } else {
+            let mut i = begin;
+            while i < nums.len() {
+                cur.push(nums[i]);
+                Solution::backtrack(ans, cur, nums, i + 1);
+                cur.pop();
+                i += 1;
+            }
+        }
+    }
+}
+```
+
+## 90. Subsets II
+```rs
+impl Solution {
+    pub fn subsets_with_dup(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut cur = Vec::<i32>::new();
+        let mut nums = nums;
+        nums.sort();
+        let mut is_used = vec![false; nums.len()];
+        Solution::backtrack(&mut ans, &mut cur, &nums, 0, &mut is_used);
+        ans
+    }
+    fn backtrack(ans: &mut Vec<Vec<i32>>, cur: &mut Vec<i32>, nums: &Vec<i32>, begin: usize, is_used: &mut Vec<bool>) {
+        ans.push(cur.clone()); 
+        if begin >= nums.len() {
+            return;
+        } else {
+            let mut i = begin;
+            while i < nums.len() {
+                if is_used[i] == true || (i > 0 && nums[i] == nums[i - 1] && is_used[i - 1] == false) {
+                    i += 1;
+                    continue;
+                }
+                is_used[i] = true;
+                cur.push(nums[i]);
+                Solution::backtrack(ans, cur, nums, i + 1, is_used);
+                is_used[i] = false;
+                cur.pop();
+                i += 1;
+            }
+        }
+    }
+}
+```
