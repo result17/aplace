@@ -251,3 +251,9 @@ export default function (){
 }
 
 ```
+## wasm想要使用sharedArrayBuffer的条件是什么？
+响应头要加上
+```http
+Cross-Origin-Embedder-Policy: require-corp
+Cross-Origin-Opener-Policy: same-origin
+```
