@@ -261,3 +261,18 @@ Cross-Origin-Opener-Policy: same-origin
 ## npm version
 ~1.0.2 可以升级至 1.0.*
 ^1.0.2 可以升级至 1.*.*
+
+## tree-shaking
+Tree-Shaking指的是消除永远不会被执行的代码（dead code）
+
+## Map和WeakMap有什么不同点
+JavaScript中的map和weakMap都是用于存储键值对的数据结构，但它们之间有几个重要的不同点：
+
+- 引用类型的处理方式：map可以存储任意类型的键和值，而weakMap只能存储对象作为键，并且这些对象是弱引用的，也就是说，如果一个对象没有被其他地方引用，它将被垃圾回收，无法被weakMap访问。
+
+- 大小的追踪：map具有size属性，可以轻松地确定其中存储了多少个键值对，而weakMap没有size属性，并且无法轻松确定其中存储了多少个键值对。
+
+- 迭代器：map具有迭代器，可以使用for...of循环或forEach方法对其中的键值对进行迭代，而weakMap没有迭代器，因为无法确定其中存储了多少个键值对。
+
+性能：由于weakMap使用了弱引用，因此它的性能可能会比map略差一些，尤其是在存储大量对象时。
+
