@@ -257,3 +257,7 @@ export default function (){
 Cross-Origin-Embedder-Policy: require-corp
 Cross-Origin-Opener-Policy: same-origin
 ```
+
+## npm version
+~1.0.2 可以升级至 1.0.*
+^1.0.2 可以升级至 1.*.*
