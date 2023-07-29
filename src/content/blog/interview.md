@@ -317,3 +317,15 @@ DOM XSS 是由于浏览器解析机制导致的漏洞，服务器不参与，而
 - 接口转义或将特殊字符过滤
 - CSP 内容安全策略 限制恶意脚本执行
 - 使用专门的xss过滤器
+
+## vue diff策略
+- 通过key和vnode的type确定可以复用的dom节点。
+- 在有相同key和相同个数的新旧节点比较中，维护变量lastIndex，遍历新节点如果在旧节点寻找到的索引小于lastIndex证明该节点需要移动，否则更新lastIndex。
+### 节点复用
+vnode被挂载后vnode.el就会保存实际的dom节点。复用就是讲新vnode.el指向旧vnode.el。
+### 节点移动
+移动节点，获取当前vnode节点的前一个vnode的el作为锚点，使用浏览器的dom api insertBefore插入。
+### 新增节点
+使用一个外层变量find，表示新vnode是否在旧vode中是否存在。若不存在则会被视为新增节点，找到新vnode的前一个vnode的el，若el存在则在插入至后面。若不存在则作为锚点元素mount的第一个子节点。
+## 删除节点
+若旧vnode没在新vnode中找到，则使用unmount函数写在旧vnode的el。
