@@ -318,7 +318,7 @@ DOM XSS 是由于浏览器解析机制导致的漏洞，服务器不参与，而
 - CSP 内容安全策略 限制恶意脚本执行
 - 使用专门的xss过滤器
 
-## vue diff策略
+## vue 简单diff策略
 - 通过key和vnode的type确定可以复用的dom节点。
 - 在有相同key和相同个数的新旧节点比较中，维护变量lastIndex，遍历新节点如果在旧节点寻找到的索引小于lastIndex证明该节点需要移动，否则更新lastIndex。
 ### 节点复用
@@ -329,3 +329,45 @@ vnode被挂载后vnode.el就会保存实际的dom节点。复用就是讲新vnod
 使用一个外层变量find，表示新vnode是否在旧vode中是否存在。若不存在则会被视为新增节点，找到新vnode的前一个vnode的el，若el存在则在插入至后面。若不存在则作为锚点元素mount的第一个子节点。
 ## 删除节点
 若旧vnode没在新vnode中找到，则使用unmount函数写在旧vnode的el。
+
+### 时间复杂度
+o(n * n)
+
+## vue2 双端Diff算法
+双端 Diff 算法是一种同时对新旧两组子节点的两个端点进行比较的算法。
+```js
+while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+  if (oldStartVNode.key === newStartVNode.key) {
+    // 调用 patch 函数在 oldStartVNode 与 newStartVNode 之间打补丁
+    patch(oldStartVNode, newStartVNode, container)
+    // 更新相关索引，指向下一个位置
+    oldStartVNode = oldChildren[++oldStartIdx]
+    newStartVNode = newChildren[++newStartIdx]
+  } else if (oldEndVNode.key === newEndVNode.key) {
+    patch(oldEndVNode, newEndVNode, container)
+    oldEndVNode = oldChildren[--oldEndIdx]
+    newEndVNode = newChildren[--newEndIdx]
+  } else if (oldStartVNode.key === newEndVNode.key) {
+    patch(oldStartVNode, newEndVNode, container)
+    insert(oldStartVNode.el, container, oldEndVNode.el.nextSibling)
+    oldStartVNode = oldChildren[++oldStartIdx]
+    newEndVNode = newChildren[--newEndIdx]
+  } else if (oldEndVNode.key === newStartVNode.key) {
+    patch(oldEndVNode, newStartVNode, container)
+    insert(oldEndVNode.el, container, oldStartVNode.el)
+    oldEndVNode = oldChildren[--oldEndIdx]
+    newStartVNode = newChildren[++newStartIdx]
+  }
+}
+```
+### 时间复杂度
+理想情况 o(n)
+相比简单 Diff 算法，双端 Diff 算法的优势在于，对于同样的更新场景，执行的DOM 移动操作次数更少。
+
+## vue3 快速diff
+### 预处理
+首先patch相同的前置和后置节点。
+### source数组和最长递增子序列
+根据剩下的vnode节点数量构建source 数组，将用来存储新的一组子节点中的节点在旧的一组子节点中的位置索引，后面将会使用它计算出一个最长递增子序列，并用于辅助完成 DOM 移动的操作。
+正常两次遍历构建source数组需要o(n * n)，使用索引表Map<vnode.key, new vnode.index>讲构建source数组时间复杂度降低o(n)。
+根据source的最长递增子序列可以哪些元素可以不移动（节点在更新前后顺序没有发生变化）。
