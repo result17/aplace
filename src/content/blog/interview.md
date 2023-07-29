@@ -276,3 +276,44 @@ JavaScript中的map和weakMap都是用于存储键值对的数据结构，但它
 
 性能：由于weakMap使用了弱引用，因此它的性能可能会比map略差一些，尤其是在存储大量对象时。
 
+## ts中的！
+! 在 TypeScript 中是用于强制类型转换的。例如，如果您有一个 number 类型的值，您可以使用 ! 将其强制转换为 string 类型：
+```ts
+const number = 123;
+const string = number!;
+``` 
+
+## vue中的生命周期
+
+## vue useForceUpdate
+```ts
+export function useForceUpdate() {
+  const instance = getCurrentInstance()
+  return () => instance.proxy.$forceUpdate()
+}
+```
+
+## typescript 中类型和接口区别
+- 类型能联合和交叉，接口不能
+- 类型能定义对象和其他类型，接口不能
+- 接口可以继承，而类型不能。
+- 可以实现多个接口，而类型不可以。
+- 接口可以拓展，而类型不可以。
+
+## xss
+XSS 是跨站点脚本攻击（Cross-Site Scripting）的简称
+常见类型分为
+- 反射型xss：常见在搜索中，接受用户输入并编码到URL中，并在页面中渲染出来。此时
+```
+?id=<script>alert(1)</script>
+```
+就有注入恶意脚本机会。
+- 存储型xss：常见于带评论功能的网站中，攻击者上传恶意代码脚本至服务器数据库，当正常用户浏览到该帖子时就有机会执行恶意代码。
+- DOM型xss：常见于一些用hash锚点的网站中，hash锚点传入恶意代码，js将恶意代码作为拼接dom结构的字符串插入至页面就会触发。
+DOM XSS 是由于浏览器解析机制导致的漏洞，服务器不参与，而存储型与反射型都需要服务器响应参与
+
+防范措施
+- HTML转义或将特殊字符过滤
+- 接口转义或将特殊字符过滤
+- CSP 内容安全策略 限制恶意脚本执行
+- 使用专门的xss过滤器
