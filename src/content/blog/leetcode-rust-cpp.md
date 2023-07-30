@@ -1350,3 +1350,30 @@ impl Solution {
     }
 }
 ```
+
+## 24. Swap Nodes in Pairs
+```cpp
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        if (!head || !head->next) return head;
+        ListNode* pre = new ListNode();
+        pre->next = head;
+        ListNode* dummy = pre;
+
+        ListNode* slow = head;
+        while (slow && slow->next) {
+            ListNode* fast = slow->next;
+            // 交换过程
+            pre->next = fast;
+            slow->next = fast->next;
+            fast->next = slow;
+            
+            // update
+            pre = slow;
+            slow = slow->next;
+        }
+        return dummy->next;
+    }
+};
+```
