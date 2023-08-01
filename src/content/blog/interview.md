@@ -429,3 +429,92 @@ TCP报文分为首部、数据和检验和
 - 继续传完数据后，服务器发送FIN
 - 客户端发送ACK包，确认收到FIN包
 
+## 为什么 script 标签要放在body后面？
+由于请求并执行script标签会阻碍页面渲染，此时dom树还没构建好，页面没法渲染完整。
+
+## 解决是 script 标签内添加 async 和 defer 属性
+- async 并行请求，加载完成尽快解析和执行
+- defer 并行请求，加载完成在DOMContentLoaded 事件之前执行的，加载ESM脚本时会自动延迟处理。
+
+## 动态加载模块
+```js
+squareBtn.addEventListener("click", () => {
+  import("/js-examples/modules/dynamic-module-imports/modules/square.js").then(
+    (Module) => {
+      let square1 = new Module.Square(
+        myCanvas.ctx,
+        myCanvas.listId,
+        50,50,100,"blue",
+      );
+    },
+  );
+});
+
+```
+
+## vite 进执行.ts文件的转译工作
+Vite 仅执行 .ts 文件的转译工作，并不执行 任何类型检查。并假定类型检查已经被你的 IDE 或构建过程处理了。
+
+## @import和Link引入css文件
+@import 和 Link 的区别如下：
+
+@import 是 CSS 的内部引入语法，而 Link 是 HTML 的引入语法。
+@import 只能引入 CSS 文件，而 Link 可以引入任何类型的文件。
+@import 引入的 CSS 文件会在当前 CSS 文件中被解析，而 Link 引入的 CSS 文件会在 HTML 文档中被解析。
+@import 引入的 CSS 文件会覆盖当前 CSS 文件中定义的同名的样式，而 Link 引入的 CSS 文件不会覆盖当前 CSS 文件中定义的同名的样式。
+因此，在大多数情况下，我们应该使用 Link 引入 CSS 文件，而不是使用 @import。但是，如果我们需要在 CSS 文件中引入其他 CSS 文件，那么我们可以使用 @import。
+
+## css优先级
+样式来源	顺序	类型
+- 内联样式	1	ID 选择器
+- 内部样式	2	类选择器
+- 外部样式	3	元素选择器
+- 属性选择器	4	属性选择器
+- 伪类选择器	5	伪类选择器
+- 伪元素选择器	6	伪元素选择器
+
+## redux的compose狗屎代码
+自以为是：充分利用函数式编程，将闭包函数当作参数互相传递，恶心至极
+```js
+// 计算一个柯里化函数？，函数执行顺序是从右到左
+const compose = (...funcs) => {
+  return funcs.reduce((f, g) => (x) => f(g(x)));
+};
+function logMiddleware() {
+  /* 第二层在reduce中被执行 */
+  return (next) => {
+    /* 返回增强后的dispatch */
+    console.log(next);
+    return (action) => {
+      const { type } = action;
+      console.log("第一个中间件:", type);
+      return next(action);
+    };
+  };
+}
+function logMiddleware2() {
+  /* 第二层在reduce中被执行 */
+  return (next) => {
+    console.log("事件参数");
+    /* 返回增强后的dispatch */
+    console.log(next);
+    // 用返回值作为下一个函数的参数
+    console.log("用返回值作为下一个中间件的参数");
+    return (action) => {
+      const { type } = action;
+      console.log("第二个中间件:", type);
+      return next(action);
+    };
+  };
+}
+
+// 联合函数
+const cf = compose(logMiddleware(), logMiddleware2());
+
+// 函数参数
+cf(({ type }) => {
+  console.log(`what is ${type}`);
+})({
+  type: 1,
+});
+```
