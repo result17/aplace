@@ -337,14 +337,14 @@ export class EventBus implements IEventBus {
 
 ## instanceof
 ```ts
-const instanceOf = (left: Object, right: Function): boolean => {
-  if (typeof left !== 'object' || left === null) return false
-  let proto = Object.getPrototypeOf(left)
-  while (true) {
-    if (proto === null) return false
-    if (proto === right.prototype) return true
-    proto = Object.getPrototypeOf(proto)
+const instanceOf = (left: Object, right: Function) => {
+  let left_proto = Object.getPrototypeOf(left)
+  const right_proto = right.prototype
+  while (left_proto) {
+    if (left_proto === right_proto) return true
+    left_proto = Object.getPrototypeOf(left_proto)
   }
+  return false  
 }
 ```
 
@@ -605,4 +605,55 @@ export function singleton<T extends { new(...args:any[]): Object}>(constructor: 
       }
   }
 }
+```
+
+## vue3 函数组件
+```ts
+<script setup lang='ts'>
+
+import { ref, h } from "vue"
+
+/**
+ * Implement a functional component :
+ * 1. Render the list elements (ul/li) with the list data
+ * 2. Change the list item text color to red when clicked.
+*/
+const ListComponent = (props, context) => {
+  const { emit } = context
+  const children = props.list.map((it, index) => {
+    return h('li', {
+      onClick: () => emit('toggle', index),
+      style: { color: props.activeIndex === index ? 'red' : '' }
+    }, it.name)
+  })
+
+  return h("ul", children)
+}
+
+ListComponent.props = ['list', 'activeIndex']
+ListComponent.emits = ['toggle']
+
+const list = [{
+  name: "John",
+}, {
+  name: "Doe",
+}, {
+  name: "Smith",
+}]
+
+const activeIndex = ref(0)
+
+function toggle(index: number) {
+  activeIndex.value = index
+}
+
+</script>
+
+<template>
+  <list-component
+    :list="list"
+    :active-index="activeIndex"
+    @toggle="toggle"
+  />
+</template>
 ```
