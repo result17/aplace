@@ -590,3 +590,19 @@ console.log(insertSort(source))
 ```ts
 type UnGenericPromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never
 ```
+
+## 使用装饰器实现单例模式
+```ts
+export function singleton<T extends { new(...args:any[]): Object}>(constructor: T) {
+  let instance: null | Object;
+  
+  return class Single extends constructor {
+      static new(): Single {
+        if (!instance) {
+          instance = new constructor()
+        }
+        return instance
+      }
+  }
+}
+```
