@@ -52,7 +52,7 @@ Strict: 任何情况下都不会向第三方网站请求发送Cookie
 v16：出于对冒泡的了解，我们直接在按钮事件上加e.stopPropagation()，这样就不会冒泡到document，isShowText 也不会被置为false了。但由于v16版本的事件委托是绑在document上的，它的事件源跟document就是同级了，而不是上下级，所以e.stopPropagation()并没有起作用。如果要阻止冒泡，可以使用原生的
 e.nativeEvent.stopImmediatePropagation()阻止同级冒泡，这样文字就可以显示了。
 
-v17：由于事件委托到根目录root节点，与document属于上下级关系，所以可以直接使用e.stopPropagation()阻止
+v17：由于事件委托到根目录rootFiber节点，与document属于上下级关系，所以可以直接使用e.stopPropagation()阻止
 
 ## 如何取消请求的发送
 - XHR 使用 xhr.abort()
@@ -83,3 +83,14 @@ hash
 
 通过 location.hash 跳转路由
 通过 hashchange event 监听路由变化
+
+## 重绘和重拍
+- 重绘 不改变元素的几何尺寸，如背景颜色和图片这些。
+- 重排 改变元素的几何尺寸，如旋转变化等。
+1. 使用 flex 布局或 grid 布局，而不是使用绝对定位。
+2. 使用 CSS 变量来定义颜色和尺寸，而不是使用硬编码的值。
+3. 避免使用js经常修改元素的几何尺寸，尽量使用css3动画。
+
+## BFC
+
+## 浏览器解析html、css和JavaScript发生了什么？

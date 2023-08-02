@@ -85,3 +85,14 @@ setTimeout(()=>{
 ```
 flushSync 中的 setState > 正常执行上下文中 setState > setTimeout ，Promise 中的 setState。
 在不是 pureComponent 组件模式下， setState 不会浅比较两次 state 的值，只要调用 setState，在没有其他优化手段的前提下，就会执行更新。但是 useState 中的 dispatchAction 会默认比较两次 state 是否相同，然后决定是否更新组件。
+
+## 函数组件模拟componentWillMount
+使用useLayoutEffect模拟, useLayoutEffect 是 useEffect 的一个版本，在浏览器重新绘制屏幕之前触发。
+```js
+useLayoutEffect(() => {
+  console.log('函数组件模拟componentWillMount')
+}, [])
+```
+
+## useEffect vs useLayoutEffct
+useLayoutEffect 的回调是在提交阶段同步执行的，而 useEffect 是在提交阶段完成后的未来某时刻执行。因此，在 useEffect 的回调中更新组件状态或修改 DOM，往往会引起页面闪一下的 bug。当遇到这类问题时，应使用 useLayoutEffect 代替 useEffect，因为同步执行的代码一定在浏览器重绘之前执行。
