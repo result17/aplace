@@ -771,11 +771,12 @@ unbatchedUpdates(() => {
 ## scheduleUpdateOnFiber
 
 - unbatch(同步)直接进入performSyncWorkOnRoot，进入调和流程，render和commit
-- 否则则是useState和setState进入enSureRootIsScheduled调度流程
+- 否则是useState和setState进入enSureRootIsScheduled调度流程
 - 当前的执行任务类型为 NoContext ，说明当前任务是非可控的，那么会调用
-  flushSyncCallbackQueue 方法。 总结
-- performSyncOnRoot 会立刻进入调和阶段
-- enSureRootIsScheduled调度流程
+  flushSyncCallbackQueue 方法。 
+### 总结
+- performSyncOnRoot 会立刻进入调和阶段 里面调用renderRootSync（render阶段 分为 beginWork（向下调和）和commitUnitOfWork（向上递归））和CommitRoot
+- enSureRootIsScheduled 调度流程 首先 markUpdateLaneFromFiberToRoot 向上递归更新优先级
 - flushSyncCallbackQueue 立即执行更新队列的任务
 
 ## 调度过程
@@ -789,6 +790,9 @@ if (existingCallbackPriority === newCallbackPriority) {
 }
 ```
 这个就是批量更新的原理，只有第一次会进入调度
+
+对于<code>legacy sync</code>模式最后的更新任务是performSyncWorkOnRoot。
+对于<code>Concurrent</code>模式最后的更新任务是performConcurrentWorkOnRoot
 
 ### 进入调度任务
 ```ts
@@ -863,6 +867,26 @@ function FiberNode(){
 Scheduler - reconciler- render（react dom）
 
 ### render两个阶段
+render会先调用renderRootSync
+```js
+function renderRootSync(root,lanes){
+    workLoopSync();
+    /* workLoop完毕后，证明所有节点都遍历完毕，那么重置状态，进入 commit 阶段 */
+    workInProgressRoot = null;
+    workInProgressRootRenderLanes = NoLanes;
+}
+```
+```js
+// legacy mode
+function workLoopSync() {
+  /* 循环执行 performUnitOfWork ，一直到 workInProgress 为空 */
+  while (workInProgress !== null) {
+  // concurrent mode
+  // while (workInProgress !== null & !sholdYield()) {
+    performUnitOfWork(workInProgress);
+  }
+}
+```
 - beginWork 逐级向下对children调和，实例类组件，执行函数组件，打上不同的effect tag
 - completeUnitOfWork 向上归并，由sibling则返回兄弟，没有则返回父级。期间形成effect链，进行事件收集，处理style，className。
 
@@ -875,6 +899,23 @@ Scheduler - reconciler- render（react dom）
 - mutation 执行dom操作  置空 ref ，在 ref 章节讲到对于 ref 的处理。
 对新增元素，更新元素，删除元素。进行真实的 DOM 操作。
 - layout 执行dom操作后 对类组件来说会执行生命周期，setState回调，函数组件执行useLayoutEffect钩子
-如果有 ref ，会重新赋值 ref 
+如果有 ref ，会重新赋值 ref
 
-## 深拷贝
+### React fiber如何找到state发生变化的组件
+假设组件A发生更新，先向上递归更新父级链的childLanes，接下来从RootFiber向下调和时，发现childLanes等于当前更新优先级，说明它的child链有更新任务，否则向下调和。
+
+## useDeferredValue
+useDeferredValue 作为性能优化的手段。当你的 UI 某个部分重新渲染很慢、没有简单的优化方法，同时你又希望避免它阻塞其他 UI 的渲染时，使用 useDeferredValue 很有帮助。
+
+## React 生命周期
+- componentDidCatch static getDerivedStateFromError
+捕获错误用
+- componentDidMount() 
+React 将会在组件被添加到屏幕上 （挂载） 后调用它。
+设置数据获取、订阅监听事件或操作 DOM 节点的常见位置。
+- componentDidUpdate(prevProps, prevState, snapshot?)
+React 会在你的组件更新了 props 或 state 重新渲染后立即调用它。这个方法不会在首次渲染时调用。
+- componentWillUnmount()
+React 会在你的组件被移除屏幕（卸载）之前调用它。此方法常常用于取消数据获取或移除监听事件。
+- getSnapshotBeforeUpdate(prevProps, prevState)
+在渲染前获取dom信息，有点像useLayoutEffect

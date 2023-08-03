@@ -8,7 +8,9 @@ tags:
   - release
 description: js基本功能函数简单实现
 ---
+
 ## bind
+
 ```js
 Function.prototype.bind = function (context, ...args) {
   const fn = this; // the target function
@@ -19,104 +21,112 @@ Function.prototype.bind = function (context, ...args) {
 ```
 
 ## 千分位分割
+
 ```js
 const format = (n) => {
-  let ans = ''
-  let count = 0
+  let ans = "";
+  let count = 0;
   while (n) {
-    let rest = n % 10
-    n = Math.floor(n / 10)
-    ans += rest
-    count++
-    if (count % 3 === 0 && n > 0) ans += ','
+    let rest = n % 10;
+    n = Math.floor(n / 10);
+    ans += rest;
+    count++;
+    if (count % 3 === 0 && n > 0) ans += ",";
   }
-  let res = '' 
-  let i = ans.length
+  let res = "";
+  let i = ans.length;
   while (i > 0) {
-    res += ans[--i]
+    res += ans[--i];
   }
-  return res
-}
+  return res;
+};
 ```
 
 ## debounce
+
 ```js
 const debounce = (fn, duration, imd) => {
   let timer = null;
   return function (...args) {
-    const context = this
+    const context = this;
     const f = function () {
-      timer = null
-      if (!imd) fn.apply(context, args)
-    }
-    const callNow = imd && !timer
-    clearTimeout(timer)
-    timer = setTimeout(f, duration)
-    if (callNow) fn.apply(context, args)
-  }
-}
+      timer = null;
+      if (!imd) fn.apply(context, args);
+    };
+    const callNow = imd && !timer;
+    clearTimeout(timer);
+    timer = setTimeout(f, duration);
+    if (callNow) fn.apply(context, args);
+  };
+};
 
 const cat = {
-  name: 'rose',
+  name: "rose",
   count: 0,
-  print: function() {
-    this.count++
-    console.log(`${this.name}: ${this.count}`)
-  }
-}
+  print: function () {
+    this.count++;
+    console.log(`${this.name}: ${this.count}`);
+  },
+};
 
-setInterval(debounce(() => cat.print(), 500), 1000)
+setInterval(debounce(() => cat.print(), 500), 1000);
 ```
 
 ## throttle
+
 ```js
 const throttle = function (fn, limit) {
-  let inThrottle = false
-  let timer = null
-  let lastRun = 0
+  let inThrottle = false;
+  let timer = null;
+  let lastRun = 0;
 
-  return function(...args) {
-    const context = this
+  return function (...args) {
+    const context = this;
     if (!inThrottle) {
-      fn.apply(context, args)
-      inThrottle = true
-      lastRun = Date.now()
+      fn.apply(context, args);
+      inThrottle = true;
+      lastRun = Date.now();
     } else {
-      clearTimeout(timer)
+      clearTimeout(timer);
       timer = setTimeout(() => {
-        const now = Date.now()
+        const now = Date.now();
         if ((now - lastRun) >= limit) {
-          fn.apply(context, args)
-          lastRun = now
-          inThrottle = false
+          fn.apply(context, args);
+          lastRun = now;
+          inThrottle = false;
         }
-      }, limit - (Date.now() - lastRun))
+      }, limit - (Date.now() - lastRun));
     }
-  }
-}
+  };
+};
 ```
 
-## package.json 中的 peerDependencies 
-在我们进行一些插件开发的时候会经常用到，比如 jQuery-ui 的开发依赖于 jQuery，html-webpack-plugin 的开发依赖于 webpack等。
+## package.json 中的 peerDependencies
+
+在我们进行一些插件开发的时候会经常用到，比如 jQuery-ui 的开发依赖于
+jQuery，html-webpack-plugin 的开发依赖于 webpack等。
 
 ## vue core hasOwn
+
 ```ts
-const hasOwnProperty = Object.prototype.hasOwnProperty
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 export const hasOwn = (
   val: object,
-  key: string | symbol
-): key is keyof typeof val => hasOwnProperty.call(val, key)
+  key: string | symbol,
+): key is keyof typeof val => hasOwnProperty.call(val, key);
 ```
 
 ## NaN !== NaN
+
 ```ts
 const a = NaN;
-const b = a
+const b = a;
 // false
-console.log(a === b)
+console.log(a === b);
 ```
 
 ## Promise
+
 ```ts
 enum IPromiseState {
   Pending,
@@ -135,132 +145,137 @@ const isThenable = (obj: any): obj is IPromise => {
 type Handler = {
   handleOnFulfilled: (value?: any) => void;
   handleOnRejected: (reason?: any) => void;
-}
+};
 
 class IPromise {
-  private state: IPromiseState = IPromiseState.Pending
+  private state: IPromiseState = IPromiseState.Pending;
 
-  private result?: any
+  private result?: any;
 
   private handlersList: Handler[] = [];
 
   constructor(
     executor: (
       resolve: (val: any) => void,
-      reject: (reason: any) => void
-    ) => void
+      reject: (reason: any) => void,
+    ) => void,
   ) {
     try {
-      executor(this.resolve, this.reject)
+      executor(this.resolve, this.reject);
     } catch (error) {
-      console.log(error)
-      this.reject(error)
+      console.log(error);
+      this.reject(error);
     }
   }
 
   private setResultAndState(value: any, state: IPromiseState) {
     if (this.state !== IPromiseState.Pending) {
-      throw new Error("Promise is not pending.")
+      throw new Error("Promise is not pending.");
     }
     if (isThenable(value)) {
       value.then(this.resolve, this.reject);
       return;
     }
-    this.result = value
-    this.state = state
-    this.executorHandlers()
+    this.result = value;
+    this.state = state;
+    this.executorHandlers();
   }
 
   private resolve = (val: any | IPromise) => {
-    this.setResultAndState(val, IPromiseState.Fulfilled)
-  }
+    this.setResultAndState(val, IPromiseState.Fulfilled);
+  };
 
   private reject = (reason?: any) => {
-    this.setResultAndState(reason, IPromiseState.Rejected)
-  }
+    this.setResultAndState(reason, IPromiseState.Rejected);
+  };
 
   private executorHandlers = () => {
     if (this.state === IPromiseState.Pending) {
-      throw new Error("Promise is pending, when executing handlers.")
+      throw new Error("Promise is pending, when executing handlers.");
     }
 
     runAsync(() => {
       for (const handler of this.handlersList) {
-        const isFulFilled = this.state === IPromiseState.Fulfilled
-        isFulFilled ? handler.handleOnFulfilled(this.result) : handler.handleOnRejected(this.result)
+        const isFulFilled = this.state === IPromiseState.Fulfilled;
+        isFulFilled
+          ? handler.handleOnFulfilled(this.result)
+          : handler.handleOnRejected(this.result);
       }
-      this.handlersList.length = 0
-    })
-    
-  }
-  
+      this.handlersList.length = 0;
+    });
+  };
+
   then(
     onFullfilled?: (value: any) => any | IPromise,
-    onRejected?: (reason: any) => any | IPromise
+    onRejected?: (reason: any) => any | IPromise,
   ) {
     return new IPromise((resolve: any, reject: any) => {
       const handler: Handler = {
         handleOnFulfilled: (value: any) => {
-          if (!onFullfilled || typeof onFullfilled !== 'function') {
-            resolve(value)
+          if (!onFullfilled || typeof onFullfilled !== "function") {
+            resolve(value);
           } else {
             try {
-              resolve(onFullfilled(value as any))
+              resolve(onFullfilled(value as any));
             } catch (error) {
-              reject(error)
+              reject(error);
             }
           }
         },
         handleOnRejected: (reason: any) => {
           if (!onRejected || typeof onRejected !== "function") {
-            reject(reason)
+            reject(reason);
           } else {
             try {
-              resolve(onRejected(reason as any | IPromise))  
+              resolve(onRejected(reason as any | IPromise));
             } catch (error) {
-              reject(error)
+              reject(error);
             }
           }
-        }
-      }
+        },
+      };
 
-      this.handlersList.push(handler)
-      this.executorHandlers()
-    })
+      this.handlersList.push(handler);
+      this.executorHandlers();
+    });
   }
 
   catch(onRejected) {
-    this.then(undefined, onRejected)
+    this.then(undefined, onRejected);
   }
-  
+
   finally(onFinally: () => void) {
     this.then(
       (value) => {
-        onFinally()
-        return value
+        onFinally();
+        return value;
       },
       (reason) => {
-        onFinally()
-        throw reason
-      }
-    )
+        onFinally();
+        throw reason;
+      },
+    );
   }
-
 }
 ```
+
 ## curry 函数柯里化
+
 ```ts
-type AnyFunc = (...args: any[]) => any
+type AnyFunc = (...args: any[]) => any;
 
-type Curry<Fn extends AnyFunc> =
-  Parameters<Fn> extends [infer FirstArg, ...infer Rest]
+type Curry<Fn extends AnyFunc> = Parameters<Fn> extends
+  [infer FirstArg, ...infer Rest]
   ? (arg: FirstArg) => Curry<(...args: Rest) => ReturnType<Fn>>
-  : ReturnType<Fn>
+  : ReturnType<Fn>;
 
-function curry<T extends AnyFunc, TAgg extends unknown[]>(func: T, agg?: TAgg): Curry<T> {
-  const aggregatedArgs = agg ?? []
-  if (func.length === aggregatedArgs.length) return func(...aggregatedArgs)
-  return ((arg: any) => curry(func, [...aggregatedArgs, arg])) as any
+function curry<T extends AnyFunc, TAgg extends unknown[]>(
+  func: T,
+  agg?: TAgg,
+): Curry<T> {
+  const aggregatedArgs = agg ?? [];
+  if (func.length === aggregatedArgs.length) return func(...aggregatedArgs);
+  return ((arg: any) => curry(func, [...aggregatedArgs, arg])) as any;
 }
 
 function add(a: number, b: number, c: number): number {
@@ -273,9 +288,11 @@ const add5 = curriedAdd(5);
 const add5And6 = add5(6);
 console.log(add5And6(7));
 ```
+
 函数定义还是有点小问题
 
 ## Event bus
+
 ```ts
 export interface Registry {
   unregister: () => void;
@@ -319,8 +336,9 @@ export class EventBus implements IEventBus {
     return {
       unregister: () => {
         delete this.subscribers[event][id];
-        if (Object.keys(this.subscribers[event]).length === 0)
+        if (Object.keys(this.subscribers[event]).length === 0) {
           delete this.subscribers[event];
+        }
       },
     };
   }
@@ -332,49 +350,64 @@ export class EventBus implements IEventBus {
 ```
 
 ## this指向
-在非严格模式， 函数执行时没有明确执行上下文，则会指向全局对象（浏览器window, Node或Deno指向Global）
-在严格模式，this找不到会报undefined错误
+
+在非严格模式， 函数执行时没有明确执行上下文，则会指向全局对象（浏览器window,
+Node或Deno指向Global） 在严格模式，this找不到会报undefined错误
 
 ## instanceof
+
 ```ts
 const instanceOf = (left: Object, right: Function) => {
-  let left_proto = Object.getPrototypeOf(left)
-  const right_proto = right.prototype
+  let left_proto = Object.getPrototypeOf(left);
+  const right_proto = right.prototype;
   while (left_proto) {
-    if (left_proto === right_proto) return true
-    left_proto = Object.getPrototypeOf(left_proto)
+    if (left_proto === right_proto) return true;
+    left_proto = Object.getPrototypeOf(left_proto);
   }
-  return false  
-}
+  return false;
+};
 ```
 
 ## call
-```ts
-type AnyFnc = (...args: any[]) => any
 
-const iCall = <T extends AnyFnc>(fn: T, context: Object, ...args: any[]): ReturnType<T> => {
-  const uKey = Symbol('fn')
-  context[uKey] = fn
-  const result = context[uKey](...args)
-  delete result[uKey]
-  return result
-}
+```ts
+type AnyFnc = (...args: any[]) => any;
+
+const iCall = <T extends AnyFnc>(
+  fn: T,
+  context: Object,
+  ...args: any[]
+): ReturnType<T> => {
+  const uKey = Symbol("fn");
+  context[uKey] = fn;
+  const result = context[uKey](...args);
+  delete result[uKey];
+  return result;
+};
 ```
 
 ## apply
-```ts
-type AnyFnc = (...args: any[]) => any
 
-const iApply = <T extends AnyFnc>(fn: T, context: Object, args: any[]): ReturnType<T> => {
-  const uKey = Symbol('fn')
-  context[uKey] = fn
-  const result = context[uKey](...args)
-  delete result[uKey]
-  return result
-}
+```ts
+type AnyFnc = (...args: any[]) => any;
+
+const iApply = <T extends AnyFnc>(
+  fn: T,
+  context: Object,
+  args: any[],
+): ReturnType<T> => {
+  const uKey = Symbol("fn");
+  context[uKey] = fn;
+  const result = context[uKey](...args);
+  delete result[uKey];
+  return result;
+};
 ```
+
 ## bind
-Object.setPrototypeOf() 静态方法可以将一个指定对象的原型（即内部的 [[Prototype]] 属性）设置为另一个对象或者 null。
+
+Object.setPrototypeOf() 静态方法可以将一个指定对象的原型（即内部的 [[Prototype]]
+属性）设置为另一个对象或者 null。
 
 Object.setPropertyOf 和 Object.create 的差别在于：
 
@@ -426,98 +459,123 @@ var axisPoint = new YAxisPoint(5);
 console.log(axisPoint instanceof Point); // true
 console.log(axisPoint instanceof YAxisPoint);
 console.log(axisPoint.toString());
-
 ```
+
 ```js
-Function.prototype.bind = function(content) {
-    if(typeof this != "function") {
-        throw Error("not a function")
-    }
-    // 若没问参数类型则从这开始写
-    let fn = this;
-    let args = [...arguments].slice(1);
-    
-    let resFn = function() {
-        return fn.apply(this instanceof resFn ? this : content,args.concat(...arguments) )
-    }
-    function tmp() {}
-    tmp.prototype = this.prototype;
-    resFn.prototype = new tmp();
-    
-    return resFn;
-}
+Function.prototype.bind = function (content) {
+  if (typeof this != "function") {
+    throw Error("not a function");
+  }
+  // 若没问参数类型则从这开始写
+  let fn = this;
+  let args = [...arguments].slice(1);
+
+  let resFn = function () {
+    return fn.apply(
+      this instanceof resFn ? this : content,
+      args.concat(...arguments),
+    );
+  };
+  function tmp() {}
+  tmp.prototype = this.prototype;
+  resFn.prototype = new tmp();
+
+  return resFn;
+};
 ```
 
-## Object.create 
+## Object.create
+
 ```js
 const create = function (obj) {
   function F() {}
   F.prototype = obj;
   return new F();
-}
+};
 ```
+
 ## deepClone
+
 ```js
 function deepClone(source) {
   let target = Object.create(
-    Object.getPrototypeOf(source)
-  )
+    Object.getPrototypeOf(source),
+  );
 
   let stack = [{
     target,
-    source
-  }]
-  const sourceMap = new Map()
-  Map.set(source, target)
+    source,
+  }];
+  const sourceMap = new Map();
+  Map.set(source, target);
   while (stack.length) {
-    let { target, source } = stack.pop()
+    let { target, source } = stack.pop();
     for (let prop of Object.getOwnPropertyNames(source)) {
-      const val = source[prop]
-      if (typeof val === 'object' && val !== null) {
-        if (sourceMap.has(val)) {
-          target[prop] = sourceMap.get(val)
+      let descriptor = Object.getOwnPropertyDescriptor(source, prop);
+      if (descriptor.hasOwnProperty("value")) {
+        const val = source[prop];
+        if (typeof val === "object" && val !== null) {
+          if (sourceMap.has(val)) {
+            target[prop] = sourceMap.get(val);
+          } else {
+            target[prop] = {};
+            sourceMap.set(target[prop], val);
+            stack.push({
+              target: target[prop],
+              source: val,
+            });
+          }
         } else {
-          target[prop] = {}
-          sourceMap.set(target[prop], val)
-          stack.push({
-            target: target[prop],
-            source: val
-          })
+          target[prop] = val;
         }
-      } else {
-        target[prop] = val
       }
+      Object.defineProperty(target, prop, descriptor)
     }
   }
-}
-```
-## 隐式原型继承
-```ts
-const create = (proto: Object) => {
-  function temp() {}
-  temp.prototype = proto
-  return new temp()
+
+  if (Object.isFrozen(source)) {
+    Object.freeze(target)
+  } else if (Object.isSealed(source)) {
+    Object.seal(target)
+  } else if (!Object.isExtensible(source)) {
+    Object.preventExtensions(target)
+  }
+
+  return target;
 }
 ```
 
+## 隐式原型继承
+
+```ts
+const create = (proto: Object) => {
+  function temp() {}
+  temp.prototype = proto;
+  return new temp();
+};
+```
+
 ## 显式原型继承
+
 ```ts
 const createInstance = (constructor: Function, ...args: any[]): Object => {
-  const instance = Object.create(constructor.prototype)
-  constructor.call(instance, ...args)
-  return instance
-}
+  const instance = Object.create(constructor.prototype);
+  constructor.call(instance, ...args);
+  return instance;
+};
 ```
+
 ## 初级排序
+
 ```ts
 const source = [7, 64, 25, 12, 22, 11];
 
 const swap = (arr: number[], i: number, j: number) => {
-  let temp = arr[j]
-  arr[j] = arr[i]
-  arr[i] = temp
-  return arr
-}
+  let temp = arr[j];
+  arr[j] = arr[i];
+  arr[i] = temp;
+  return arr;
+};
 
 // 相邻元素进行比较 有序的子数组出现在数组结尾
 const bubbleSort = (src: number[]) => {
@@ -527,14 +585,14 @@ const bubbleSort = (src: number[]) => {
     let j = 0;
     while (j < len - i - 1) {
       if (src[j] > src[j + 1]) {
-        swap(src, j, j + 1)
+        swap(src, j, j + 1);
       }
       j++;
     }
     i++;
   }
-  return src
-}
+  return src;
+};
 
 // 特定索引元素进行比较更新索引 有序的子数组出现在数组开头或开头，交换最多n次
 const selectSort = (src: number[]) => {
@@ -549,11 +607,11 @@ const selectSort = (src: number[]) => {
       }
       j++;
     }
-    swap(src, minIdx, i)
+    swap(src, minIdx, i);
     i++;
   }
-  return src
-}
+  return src;
+};
 
 const insertSort = (src: number[]) => {
   let i = 1;
@@ -562,18 +620,18 @@ const insertSort = (src: number[]) => {
     let j = i - 1;
     let n = src[i];
     while (j >= 0 && n < src[j]) {
-      src[j + 1] = src[j]
+      src[j + 1] = src[j];
       j--;
     }
-    swap(src, i, j + 1)
+    swap(src, i, j + 1);
     i++;
   }
-  return src
-}
+  return src;
+};
 
-console.log(bubbleSort(source))
-console.log(selectSort(source))
-console.log(insertSort(source))
+console.log(bubbleSort(source));
+console.log(selectSort(source));
+console.log(insertSort(source));
 ```
 
 冒泡排序、选择排序和插入排序都是简单的排序算法，它们的时间复杂度都是O(n^2)，在处理大规模数据时效率较低。但是在某些特定情况下，它们的性能可能会比较好。
@@ -587,27 +645,33 @@ console.log(insertSort(source))
 因此，冒泡排序、选择排序和插入排序各有优劣，取决于具体的应用场景和数据特征。在实际应用中，我们需要根据具体的情况选择合适的排序算法。如果需要高效排序大规模数据，可以考虑使用更高效的排序算法，如快速排序、归并排序、堆排序等。
 
 ## 实现一个 ts 的工具函数 UnGenericPromise<T> ，提取 Promise 中的泛型类型
+
 ```ts
-type UnGenericPromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never
+type UnGenericPromise<T extends Promise<any>> = T extends Promise<infer U> ? U
+  : never;
 ```
 
 ## 使用装饰器实现单例模式
+
 ```ts
-export function singleton<T extends { new(...args:any[]): Object}>(constructor: T) {
+export function singleton<T extends { new (...args: any[]): Object }>(
+  constructor: T,
+) {
   let instance: null | Object;
-  
+
   return class Single extends constructor {
-      static new(): Single {
-        if (!instance) {
-          instance = new constructor()
-        }
-        return instance
+    static new(): Single {
+      if (!instance) {
+        instance = new constructor();
       }
-  }
+      return instance;
+    }
+  };
 }
 ```
 
 ## vue3 函数组件
+
 ```ts
 <script setup lang='ts'>
 
@@ -656,4 +720,32 @@ function toggle(index: number) {
     @toggle="toggle"
   />
 </template>
+```
+
+## rust 快速排序
+```rs
+fn quick_sort(array: &mut [i32]) {
+    if array.len() <= 1 {
+        return;
+    }
+
+    let pivot = array[0];
+    let mut left = 1;
+    let mut right = array.len() - 1;
+
+    while left <= right {
+        if array[left] < pivot {
+            left += 1;
+        } else if array[right] > pivot {
+            right -= 1;
+        } else {
+            array.swap(left, right);
+            left += 1;
+            right -= 1;
+        }
+    }
+
+    quick_sort(&mut array[0..left]);
+    quick_sort(&mut array[left..array.len()]);
+}
 ```
