@@ -9,17 +9,6 @@ tags:
 description: js基本功能函数简单实现
 ---
 
-## bind
-
-```js
-Function.prototype.bind = function (context, ...args) {
-  const fn = this; // the target function
-  return function (...innerArgs) {
-    return fn.apply(context, [...args, ...innerArgs]);
-  };
-};
-```
-
 ## 千分位分割
 
 ```js
@@ -747,5 +736,56 @@ fn quick_sort(array: &mut [i32]) {
 
     quick_sort(&mut array[0..left]);
     quick_sort(&mut array[left..array.len()]);
+}
+```
+
+## css中间自适应两边定宽
+```css
+body {
+  width: 100%;
+  height: 400px;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+}
+
+.left {
+  background-color: red;
+}
+
+.right {
+  background-color: aqua;
+}
+
+.mid {
+  background-color: green;
+}
+```
+```css
+body {
+  width: 100%;
+  height: 400px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.left {
+  background-color: red;
+  width: 50px;
+  height: 100%;
+}
+
+.right {
+  background-color: aqua;
+  width: 50px;
+  height: 100%;
+}
+
+.mid {
+  background-color: green;
+  flex-grow: 1;
+  height: 100%;
 }
 ```

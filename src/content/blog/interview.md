@@ -192,6 +192,10 @@ Layer）：负责在源主机和目标主机之间建立端到端的连接，并
 Layer）：负责将数据转换为应用程序可以理解的格式，并提供加密、压缩和解压缩等服务。
 应用层（Application
 Layer）：提供各种网络应用程序，如电子邮件、文件传输和远程登录等。
+### 为什么表现层、会话层具体实现很少
+[为什么表现层、会话层实现很少](https://www.zhihu.com/question/58798786)
+SDP
+会话描述协议Session Description Protocol (SDP) 是一个描述多媒体连接内容的协议，例如分辨率，格式，编码，加密算法等。所以在数据传输时两端都能够理解彼此的数据。本质上，这些描述内容的元数据并不是媒体流本身。
 
 ## TCP/IP的网络分层模型
 
@@ -207,6 +211,7 @@ Layer）：提供各种网络应用程序，如电子邮件、文件传输和远
 
 在React中，非受控组件（uncontrolled
 components）是指表单元素的值不受React组件的state或props变化控制的组件。相反，表单元素的值由DOM自身维护。
+根本原因，不同应用程序会话各异，难于抽象到具体协议。
 
 ## useEffect和useLayoutEffect区别
 
@@ -919,3 +924,118 @@ React 会在你的组件更新了 props 或 state 重新渲染后立即调用它
 React 会在你的组件被移除屏幕（卸载）之前调用它。此方法常常用于取消数据获取或移除监听事件。
 - getSnapshotBeforeUpdate(prevProps, prevState)
 在渲染前获取dom信息，有点像useLayoutEffect
+
+## setState之后
+setState本质是调用enqueueSetState
+```js
+ const update = createUpdate(eventTime, lane);
+    enqueueUpdate(fiber, update, lane);
+    const root = scheduleUpdateOnFiber(fiber, lane, eventTime);
+```
+函数组件useState
+```js
+function dispatchAction(fiber, queue, action) {
+    var lane = requestUpdateLane(fiber);
+    scheduleUpdateOnFiber(fiber, lane, eventTime);
+}
+```
+最终都会调用scheduleUpdateOnFiber
+- 在 unbatch 情况下，会直接进入到 performSyncWorkOnRoot ，接下来会进入到 调和流程，比如 render ，commit。
+- 那么任务是 useState 和 setState，那么会进入到 else 流程，那么会进入到 ensureRootIsScheduled 调度流程。
+- 当前的执行任务类型为 NoContext ，说明当前任务是非可控的，那么会调用 flushSyncCallbackQueue 方法。setTimeout Promise.resolve().then()
+
+## node 不是单进程
+<!-- https://stackoverflow.com/questions/61550822/why-node-js-spins-7-threads-per-process -->
+
+## 浏览器解释
+1. Process HTML markup and build the DOM tree.
+2. Process CSS markup and build the CSSOM tree.
+3. Combine the DOM and CSSOM into a render tree.
+4. Run layout on the render tree to compute geometry of each node.
+5. Paint the individual nodes to the screen.
+
+## 基础类型真的存在栈区？引用类型真的存在堆区吗？
+答案是否定的。
+ECMA没有规定Javascript内存分配规则。
+[JavaScript中变量存储在堆中还是栈中](https://www.zhihu.com/question/482433315)
+v8引擎实现:
+1. 字符串保存在堆上，栈上保存字符串的引用，相同字符串引用相同地址。
+2. 小整数保存在栈上，双精度浮点型保存在堆上。bigint
+3. 其他类型：引擎初始化时分配唯一地址，栈中的变量存的是唯一的引用。
+
+## HTTPS握手
+通过TCP连接
+1. 客户端send client hello（TLS加密套件，TLS版本，第一随机数）
+2. 服务器 Server done（TLS加密套件，TLS版本，第二随机数）
+- 发送服务器公钥
+- 发送CA证书
+3. 客户端 client exchange 验证TLS证书，生成随机数，并用公钥加密成预主密钥（第三随机数）。
+4. 服务端使用私钥解密预主密钥
+5. 客户端和服务端用预主密钥+第一随机数+第二随机数计算会话密钥
+握手完成
+### 补充
+- 性能最好是TLS1.2，安全性最好是TLS1.3
+- TLS证书除了记录域名有效期，非对称算法
+
+## 跨域
+<!-- https://aws.amazon.com/cn/what-is/cross-origin-resource-sharing/ -->
+我们常说的跨域其实是指跨源资源共享，英文简称cors。同源策略是浏览器特有的安全策略，限制不同源资源交换。当两个资源的协议、域名和端口都相等时才同源。
+
+## CORS的作用
+早期互联网时代，CSRF（跨站请求伪造）时有发生。在假冒网站向目的网站进行跨站请求时，会携带用户cookie进行请求，假装自己时用户进行操作。
+为此，现在所有浏览器都实现同源策略。
+
+## CORS请求分为简单请求和复杂请求
+简单请求要满足同时满足
+- 请求方法是GET POST HEAD
+- 请求头只能为 Accept-Language、Accept 或 Content-Language
+- Accept 只能为 multipart/form-data、application/x-www-form-urlencoded 或 text/plain  
+否认则称为复杂请求
+复杂请求会额外发生一个option请求，称为预检请求，作用是先检查服务器是否允许请求，避免产生意外的更改。
+```
+Access-Control-Allow-Headers: Content-Type
+
+Access-Control-Allow-Origin: https://news.example.com
+
+Access-Control-Allow-Methods: GET, DELETE, HEAD, OPTIONS
+<!-- 允许不发送预检请求 -->
+Access-Control-Max-Age: 60(s)
+```
+
+## typescript ! 非空断言操作符
+具体而言，x! 将从 x 值域中排除 null 和 undefined 。
+
+## HTTP 压缩算法
+- LZ77 霍夫曼编码
+- DEFLATE
+- GZIP
+- LZMA
+- Brotli 霍夫曼编码
+
+## import * 会做tree-shaking吗?
+import * as modules from 'esmodule' 会做 tree-shaking。tree-shaking 是一种优化技术，它可以去除未使用的模块。这可以减少代码大小
+1. 浏览器将解析 import * as modules from 'esmodule' 语句。
+2. 浏览器将找到所有导入的模块。
+3. 浏览器将检查每个模块是否被使用。
+4. 浏览器将删除未使用的模块。
+
+## script 标签的 impoerMap
+请查阅mdn
+
+## tsup转译的require函数(cjs)
+本质是闭包
+```js
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+// require_package是个函数, 运用创建时传入的json,所以是个闭包
+var require_package = __commonJS({
+  "package.json"(exports, module) {
+    module.exports = {
+      name: "freshland",
+      }
+    };
+  }
+});
+```
