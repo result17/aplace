@@ -1039,3 +1039,29 @@ var require_package = __commonJS({
   }
 });
 ```
+## Esmodule 和 cjs有什么区别
+- cjs允许动态加载
+```js
+const module = require(`${name}.js`)
+```
+- cjs同步加载, module异步加载
+- cjs发生在运行时, module发生在编译时
+- cjs输出值拷贝, module是值引用
+
+## .d.ts 模块类型声明文件
+在 TypeScript 中，.d.ts 文件是模块的类型声明文件。它用于声明模块中导出的类型，以便其他模块可以使用这些类型。
+```ts
+// tsup.config.ts
+import { defineConfig } from 'tsup';
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  clean: true,
+  bundle: true,
+  splitting: true,
+  outDir: 'dist',
+  format: ['cjs', 'esm'],
+  shims: true,
+  dts: true,
+});
+```
