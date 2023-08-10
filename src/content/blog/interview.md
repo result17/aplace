@@ -1065,3 +1065,82 @@ export default defineConfig({
   dts: true,
 });
 ```
+
+## MPA 多页应用
+服务器加载多个 HTML 页面的应用程序。它的特征就是每个页面彼此独立，且有完整的 HTML 内容。当你点击 a 标签跳转到另一个页面时，浏览器会像服务端发送请求并且重新加载页面。传统的模板技术 JSP、 Django，包括目前比较火的 Astro 框架都是采用 MPA 的方案。
+
+## SPA 单页应用
+当浏览器拿到 HTML 之后，会请求页面所需的 JS 代码，通过执行 JS 代码来完成页面渲染。
+
+## SSR
+同构架构
+1. 首屏拿到完整html
+2. 下载和执行 JS，完成 hydration。
+3. 后续路由跳转都由 JS 掌管。
+缺点
+1. 全量下载客户端js
+2. 执行全量组件Hydration
+3. 造成页面首屏TTI(可交互时间提高)
+
+## SSR 外部化
+当运行 SSR 时依赖会由 Vite 的 SSR 转换模块系统作外部化。这会同时提速开发与构建。
+
+如果依赖需要被 Vite 的管道转换，例如因为其中使用了未经过转译的 Vite 特性，那么它们可以被添加到 ssr.noExternal 中。
+
+区别是否对代码进行打包
+https://cn.vuejs.org/api/ssr.html
+
+## SSR和CSR情景使用区别
+- 对于后台管理系统、数据中台等 toB 项目，由于对首屏要求不高，且用户量较少，一般采取 CSR 简化开发流程，快速交付项目
+- 对于官网首页、电商首页等 toC 项目，首屏速度直接关联用户的留存率，且良好的 SEO 也是提升转化率前提，因此需要依赖 SSR 挖掘进一步的可能
+
+## http1.1队头阻塞
+任何保证有序性的传输方式，但很难避免队头阻塞
+由于http采用一问一答的通讯方式，当先请求的文件过大传输时间过长，就会阻塞后面走远的加载。根本原因是必须完整的传输资源。
+### 解决方式
+- 浏览器允许对于同一域名最多有6个并行的tcp连接
+- 将资源分配在多个域名
+
+## http1.2解决http队头阻塞
+在资源块前添加帧（里面有id），允许在单个TCP连接上通过交错排列多路传输多个资源。通过帧ID组装资源。
+
+## cookie
+1. Chrome：对于单个Cookie，Chrome 80之前的版本限制为大约 4KB（4093字节），Chrome 80及之后的版本将限制提高到约 16KB（16383字节）。
+
+2. Firefox：对于单个Cookie，Firefox 3.5及之后的版本限制为大约 4KB（4096字节）。
+
+3. Safari：对于整个域名的所有Cookie总大小，Safari限制为大约 6MB。
+
+4. Internet Explorer/Edge：对于单个Cookie，Internet Explorer 11和Microsoft Edge限制为大约 4KB（4095字节）。
+
+对于子域名，cookie默认还是携带的
+
+```
+name       value                            domain      path EXPIRES                SIZE httponly secure    priority
+sessionid	edb4646f1xxxed9680xxxx1d416fadb1	.juejin.cn	/	2024-07-22T20:01:35.512Z	41	  ✓				          Medium
+```
+### same site
+same site 有strict lax none
+- 禁止第三方请求携带cookie
+- 允许第三方get提交表单，或图片请求
+- 默认都会带上cookie
+### domain
+显式指定域：如果设置了domain属性，并指定了一个具体的域名，那么该Cookie只能在该域名及其子域名下被发送和访问
+隐式指定域：如果未指定domain属性（或domain属性为空），则该Cookie的域会自动设置为设置该Cookie的页面所在的域名
+
+## path
+显式指定路径：如果设置了path属性，并指定了一个具体的路径，那么该Cookie只能在该路径下被发送和访问。
+
+例如，设置path="/example"的Cookie只能在服务器上的/example路径及其子路径下访问，而无法在其他路径下访问。
+
+默认路径：如果未指定path属性（或path属性为空），则该Cookie的路径默认为设置该Cookie的页面的路径。
+
+例如，如果在路径/example下的页面中设置了一个Cookie，而未指定path属性，那么该Cookie只能在/example路径及其子路径下访问。
+
+## TCP 队头阻塞
+https://zhuanlan.zhihu.com/p/330300133
+
+## 小心monkey方法
+Object.prototype.toString.call
+
+## "If-None-Match" "If-Modified-Since"
