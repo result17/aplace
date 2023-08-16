@@ -13,14 +13,27 @@ description: 前端面试题
 
 - 能够读取其他函数内部变量的函数
 - 函数内部创建另一个函数 函数能够访问其定义时的环境中变量的方式得以实现。
+### 闭包应用
+- commonjs 模块加载
+- react hook
+- 高阶函数 装饰器
 
 ## BFC创建条件
+W3C CSS2.1 规范中的一个概念
 
 - 根元素 html
 - float 不为none
 - position为absolute或fixed
 - display为inline-block，table-cell，table-caption， flex，inline-flex
 - overflow不为visible
+
+### BFC表现
+具有 BFC 特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且 BFC 具有普通容器所没有的一些特性。
+
+### BFC特性应用
+- 同一个 BFC 下外边距会发生折叠
+- BFC 可以包含浮动的元素（清除浮动）由于容器内元素浮动，脱离了文档流，所以容器只剩下边距高度。如果使触发容器的 BFC，那么容器将会包裹着浮动元素。
+- BFC 可以阻止元素被浮动元素覆盖
 
 ## 如何避免搜索引擎抓取网页内容
 
@@ -38,10 +51,16 @@ description: 前端面试题
 ## 输入一个URL后到用户完整看到网页发生了什么?
 
 - 从url到http请求
+TODO
 
 ## vue2和vue3的diff算法有什么异同？
 
+- vue2 使用的双端diff，vue3使用的是基于最长递增子序列的快速diff，能够找出最长的稳定序列，在实际的benchmark有着 的提升。
+- vue2和vue3都基于编译器做了静态节点标记，vue3更将静态节点直接跳出diff循环加快了对比进度。
+- vue3借鉴了纯文本diff算法的预处理阶段，排除了相同的前驱节点和后继节点。
+
 ## react-hook-form
+- 一个方便开发者管理表单状态的react hook。
 
 ## HTTP 请求
 
@@ -58,7 +77,8 @@ http2压缩表头，将数据分为多个数据帧。目的时：
 ## HTTP 缓存
 
 - cache-control: private 私有缓存
-- 代理缓存 cache-control: no-cache no-store
+- 协商缓存 cache-control: no-cache 
+- 禁用缓存 no-store
 
 ### no-cache 和 no-store区别
 
@@ -69,7 +89,7 @@ no-store是更严格的缓存策略，它可以防止浏览器缓存任何内容
 
 在大多数情况下，no-cache是足够的，因为它可以防止浏览器缓存过时的内容。但是，如果您需要确保浏览器不缓存任何内容，则可以使用no-store。
 
-不建议随意授予 no-store，因为你失去了 HTTP
+不建议随意授予 no-store，因为你失去了 HTTP缓存
 和浏览器所拥有的许多优势，包括浏览器的后退/前进缓存。
 
 # react 协调阶段 reconcile
@@ -107,7 +127,7 @@ useLayoutEffect 用于在 DOM
 ## https链接 tcp握手 网络层
 
 基于链表的插入排序。 买卖股票最入门版。 实现 LRU。 实现一个 Hash 表。
-最大频率栈。 归并排序。 快速排序。 非递归的中序排序。 用两个栈模拟队列。
+最大频率栈。 归并排序。 快速排序。 用两个栈模拟队列。
 树的层序 S 形遍历。 合并 K 个有序链表。
 
 ## useDeferredValue

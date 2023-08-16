@@ -2,7 +2,7 @@
 author: cosin
 pubDatetime: 2023-07-27T20:42:14+08:00 
 title: vue设计与实现读书笔记
-postSlug: interview
+postSlug: vue_design
 featured: true
 tags:
   - release

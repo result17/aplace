@@ -1379,3 +1379,42 @@ public:
 ```
 
 ## 148. Sort List
+
+## 103. Binary Tree Zigzag Level Order Traversal
+```rs
+use std::cell::RefCell;
+use std::collections::VecDeque;
+use std::rc::Rc;
+impl Solution {
+    pub fn zigzag_level_order(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        if root.is_none() {
+            return ans;
+        }
+        let mut queue = VecDeque::new();
+        queue.push_back(root.unwrap());
+        let mut depth = 0;
+        while !queue.is_empty() {
+            let mut level = Vec::<i32>::new();
+            let length = queue.len();
+            for _ in 0..length {
+                let node = queue.pop_front().unwrap();
+                let node = node.borrow();
+                level.push(node.val);
+                if node.left.is_some() {
+                    queue.push_back(node.left.clone().unwrap());
+                }
+                if node.right.is_some() {
+                    queue.push_back(node.right.clone().unwrap());
+                }
+            }
+            if depth % 2 == 1 {
+                level.reverse();
+            }
+            ans.push(level);
+            depth += 1;
+        }
+        ans
+    }
+}
+```
