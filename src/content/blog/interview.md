@@ -51,13 +51,50 @@ W3C CSS2.1 规范中的一个概念
 ## 输入一个URL后到用户完整看到网页发生了什么?
 
 - 从url到http请求
-TODO
+从网络和浏览器渲染角度回答回答
+- 检验url是否合法，不合法通常会转为浏览器默认的搜索引擎搜索。
+- 不合法的话，浏览器就会去用如下方式寻找url对应的ip地址。
+1. 浏览器缓存，查看此url是否被请求过，直接复用以前的IP地址。如果该资源非html并且命中强缓存（max-age小于规定的秒数，则直接复用disk cache或者memory cache，具体采用哪一种应该看浏览器策略，而html文件，chrome会在刷新页面的请求头自动带上max-age = 0，很难命中强缓存）
+2. 操作系统缓存 hosts文件（但在windows验证过，对https连接无效）
+3. 本地DNS -> 权威DNS服务器 -> 域名DNS服务器 -> 根DNS服务器
+获取到url对应的ip后，开始进行TCP握手：
+1. 客户端向服务器发送请求。SYN置为1，然后序列号为X
+2. 服务器响应， SYN和ACK置为1，确认号为X + 1，序列号为Y
+3. 客户端ACK置为1，序列号为Y + 1,连接建立
+如果是使用https协议，还要进行https握手（TLS协议）
+1. 客户端send client hello（TLS加密套件，TLS版本，第一随机数）
+2. 服务器 Server done（TLS加密套件，TLS版本，第二随机数）
+- 发送服务器公钥
+- 发送CA证书
+3. 客户端 client exchange 验证TLS证书，生成随机数，并用公钥加密成预主密钥（第三随机数）。
+4. 服务端使用私钥解密预主密钥
+5. 客户端和服务端用预主密钥+第一随机数+第二随机数计算会话密钥
+此后
+服务器和客户端就使用对称加密对内容进行加密传输（如果是协商缓存，请求会带上If-Modified-Since和If-None-Match（由上一次请求的Last-Modified和ETag得到），此时服务器会根据请求头来返回304资源未更改还是200重新请求。
+从浏览器渲染
+1. 使用具有上下文信息解释html，生成dom树。
+2. 根据important和内联样式，不同选择器优先级，解析css，生成cssom树。
+3. 回流reflow（也叫重排），根据渲染树进行回流，得到节点的几何信息
+4. repaint重绘 根据渲染树以及回流得到的几何信息，得到节点的绝对像素
+5. 将像素发送GPU，展示页面，GPU将多个合成层合并同一个层，并展示页面。
+划重点：使用css3硬件加速，可以让transform、opacity、filters这些动画不会引起回流重绘 。但是对于动画的其它属性，比如background-color这些，还是会引起回流重绘的，不过它还是可以提升这些动画的性能。
+CSS的最终表现分为以下四步：Recalculate Style（计算样式） -> Layout（重排） -> Paint Setup and Paint（重绘） -> Composite Layers（组合层）。由于transform是位于Composite Layers层，所以相对而言使用transform实现的动画效果肯定比left这些更加流畅。
+
 
 ## vue2和vue3的diff算法有什么异同？
 
-- vue2 使用的双端diff，vue3使用的是基于最长递增子序列的快速diff，能够找出最长的稳定序列，在实际的benchmark有着 的提升。
+- vue2 使用的双端diff，vue3使用的是基于最长递增子序列的快速diff，能够找出最长的稳定序列，在实际的benchmark有着50%的提升。
 - vue2和vue3都基于编译器做了静态节点标记，vue3更将静态节点直接跳出diff循环加快了对比进度。
 - vue3借鉴了纯文本diff算法的预处理阶段，排除了相同的前驱节点和后继节点。
+
+### vue3 diff
+- 处理前置和后继节点后，会构造source数组初始值为-1，长度等于余下未处理节点的数量。用于存储新的一组子节点在旧的子节点中的位置索引（通过创建一个Map<Node.key, index of new List>降低时间复杂度），将被用于计算最长递增子序列（seq数组存储source数组的最长递增子序列的索引，含义是这些个节点中更新前后顺序没有变化），并用于辅助完成DOM移动操作。
+- 卸载和复用，通过旧节点是否在索引表中判断节点是复用还是卸载。
+- 已经更新过的节点数量应该小于新的一组子节点中需要更新的节点数量
+- 新增节点，该key在索引表的值为-1，所以要新增节点。
+
+## vue3使用函数组件好处
+主要是简单性，因为对于函数式组件来说，它无须初始化 data 以及生命周期钩子
 
 ## react-hook-form
 - 一个方便开发者管理表单状态的react hook。
@@ -73,6 +110,7 @@ http2压缩表头，将数据分为多个数据帧。目的时：
 
 - 加快传输速度
 - 能优先传输优先级高的帧
+- 避免http队头阻塞
 
 ## HTTP 缓存
 
@@ -123,9 +161,17 @@ useLayoutEffect 用于在 DOM
 是更常用的选择，因为它不会阻止后续更新，也不会影响性能。
 
 ## vue3 生命周期 diff算法和react的区别
+1. beforeCreate
+2. created
+3. beforeMount
+4. mounted
+5. beforeUpdate
+6. updated
+7. beforeunmount
+8. unmounted
 
 ## https链接 tcp握手 网络层
-
+TODO
 基于链表的插入排序。 买卖股票最入门版。 实现 LRU。 实现一个 Hash 表。
 最大频率栈。 归并排序。 快速排序。 用两个栈模拟队列。
 树的层序 S 形遍历。 合并 K 个有序链表。
@@ -226,12 +272,12 @@ Layer）：负责为数据包选择最佳的路径，并将其从源主机发送
 Layer）：负责在源主机和目标主机之间建立端到端的连接，并提供可靠的数据传输服务。
 应用层（Application
 Layer）：提供各种网络应用程序，如电子邮件、文件传输和远程登录等。
+根本原因，不同应用程序会话各异，难于抽象到具体协议。
 
 ## 非受控组件
 
 在React中，非受控组件（uncontrolled
 components）是指表单元素的值不受React组件的state或props变化控制的组件。相反，表单元素的值由DOM自身维护。
-根本原因，不同应用程序会话各异，难于抽象到具体协议。
 
 ## useEffect和useLayoutEffect区别
 
@@ -295,10 +341,36 @@ export namespace JSX {
 jsx.Element在react中ReactElement，在vue为Vnode
 
 ## script 标签 async defer
-
+1. async 异步加载 渲染不会等待脚本加载完成，脚本加载不会阻塞渲染
+2. defer 延迟加载 渲染会等待脚本加载完成（阻塞DOMContentLoad事件），脚本加载不会阻塞渲染
+- async不保证执行和加载顺序，defer保证
+- async适用无依赖模块，defer适用依赖主页面的外部脚本文件
+- async 一旦下载完就执行,defer要等到文档解析完成后执行。
+- 如果同时设置async和defer,defer不会生效。
 ## 事件循环
-
+https://html.spec.whatwg.org/multipage/webappapis.html#queuing-tasks
+- ecma没有规定事件循环的细节，只有html中有event loop的定义
+To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
 ## react生命周期
+类组件有，函数组件没有
+- 初始化阶段
+1. constructor 执行
+2. getDerivedStateFromProps 执行
+3. componentWillMount 执行
+4. render 函数执行
+5. componentDidMount执行
+
+- 更新阶段
+1. componentWillReceiveProps
+2. getDerivedStateFromProps
+3. shouldComponentUpdate
+4. componentWillUpdate
+5. render 函数
+6. getSnapshotBeforeUpdate
+7. componentDidUpdate
+
+- 销毁阶段
+1. componentWillUnmount
 
 [react生命周期](https://postimg.cc/dhxXhq9P)
 
@@ -476,7 +548,7 @@ while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
 
 ## vue3 快速diff
 
-### 预处理fdfadfd
+### 预处理
 
 首先patch相同的前置和后置节点。
 
@@ -496,6 +568,10 @@ vnode.index>讲构建source数组时间复杂度降低o(n)。
 - 拆分多个context
 
 ## es module和cjs的相同点和不同点
+- es module 发生在编译器，cjs发生在运行时
+- es module只能静态引入（只能写在js文件顶部） cjs能动态引入（包括引入动态路径，条件引入）
+- es module支持tree sharking cjs不支持
+
 
 ## js代码执行
 
@@ -551,7 +627,7 @@ TCP报文分为首部、数据和检验和
 
 - 客户端向服务器发送请求。SYN置为1，然后序列号为X
 - 服务器响应， SYN和ACK置为1，确认号为X + 1，序列号为Y
-- 客户端ACK置为1，序列号为X + 1,连接建立
+- 客户端ACK置为1，序列号为Y + 1,连接建立
 
 ### 三次握手目的
 
@@ -1164,3 +1240,92 @@ https://zhuanlan.zhihu.com/p/330300133
 Object.prototype.toString.call
 
 ## "If-None-Match" "If-Modified-Since"
+
+## no-cache 和 max-age区别
+https://stackoverflow.com/questions/1046966/whats-the-difference-between-cache-control-max-age-0-and-no-cache
+
+## 回流 reflow的原因
+- 页面首次渲染
+- 浏览器窗口大小发生改变
+- 元素尺寸或位置发生改变
+- 元素内容变化（字体大小）
+- 添加或删除可见的dom元素
+- 激活css伪类（:hover）
+查询位置信息或调用滚动api时
+- clientWidth、clientHeight、clientTop、clientLeft
+offsetWidth、offsetHeight、offsetTop、offsetLeft
+scrollWidth、scrollHeight、scrollTop、scrollLeft
+- scrollIntoView()、scrollIntoViewIfNeeded() scrollTo()
+- getComputedStyle()
+getBoundingClientRect()
+
+## 避免回流
+- 避免使用table布局
+- 尽可能在dom树最末端改变class
+- 避免设置多层内联样式
+- 将动画效果应用到position属性为absolute或fixed的元素上。
+- 避免使用css表达式（例如：calc()）
+- 避免频繁操作样式
+- 避免频繁操作DOM
+- 将元素设置为display: none后再设置样式
+- 避免多次读取位置api
+- 对具有复杂动画的元素使用绝对定位，使它脱离文档流，否则会引起父元素及后续元素频繁回流。
+
+## react diff算法
+- 从左到右对比复用旧节点，如果不能复用，则停止对比，记录位置。
+- 如果上一轮对比完所有新节点，则移除多余的旧节点。
+- 如果新节点还没有用完，则从停止的位置继续开始对比新节点，匹配成功则复用，没匹配成功则打上Placement标记。
+- 所有对比完成后，删除没有复用的旧节点。
+
+## react HOC 注意事项
+- 谨慎修改原型链如：覆盖生命周期方法
+- 不要在函数组件内部或类组件render函数中使用HOC
+- ref的处理：ref严格来说不是ref，可以使用forwardRef作ref的转发
+- 注意多个HOC嵌套顺序问题
+- 继承静态属性（分为手动继承 hoist-non-react-statics 自动拷贝所有的静态方法:）
+
+## 权限拦截 HOC
+1. 需要权限的页面或者组件，用 HOC 包裹，并输入唯一的权限签名。
+2. 用 Context 上下文保存全局的权限菜单列表，用 Provider 注入异步获取到的权限菜单。
+3. HOC 中用 Consumer 获取权限列表，并且和签名做匹配，如果有权限，就展示，如果没有权限，展示默认没有权限组件。 
+```js
+export const Permission = React.createContext([]) 
+
+export default function Index(){
+    const [ rootPermission , setRootPermission ] = React.useState([])
+    React.useEffect(()=>{
+        /* 获取权限列表 */
+        getRootPermission().then(res=>{
+            const { code , data } = res as any
+            code === 200 && setRootPermission(data) //  [ 'docList'  , 'tagList' ]
+        }) 
+    },[])
+    return <Permission.Provider value={rootPermission} >
+         <RootRouter/>
+    </Permission.Provider>
+}
+```
+```js
+/* 没有权限 */
+function NoPermission (){
+    return <div>您暂时没有权限，请联系管理员开通权限！</div>
+}
+/* 编写HOC */
+export function PermissionHoc(authorization){
+    return function(Component){ 
+        return function Home (props){
+            const matchPermission =(value,list)=> list.indexOf(value) /* 匹配权限 */
+            return <Permission.Consumer>
+                {
+                    (permissionList) => matchPermission(authorization,permissionList) >= 0 ? <Component  {...props} /> : <NoPermission />
+                }
+            </Permission.Consumer>
+        }
+    }
+}
+```
+绑定权限
+```js
+@PermissionHoc('writeDoc')  // 绑定文档录入页面
+export default class Index extends React.Component{}
+```
