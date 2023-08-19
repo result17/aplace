@@ -13,12 +13,15 @@ description: 前端面试题
 
 - 能够读取其他函数内部变量的函数
 - 函数内部创建另一个函数 函数能够访问其定义时的环境中变量的方式得以实现。
+
 ### 闭包应用
+
 - commonjs 模块加载
 - react hook
 - 高阶函数 装饰器
 
 ## BFC创建条件
+
 W3C CSS2.1 规范中的一个概念
 
 - 根元素 html
@@ -28,11 +31,17 @@ W3C CSS2.1 规范中的一个概念
 - overflow不为visible
 
 ### BFC表现
-具有 BFC 特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且 BFC 具有普通容器所没有的一些特性。
+
+具有 BFC
+特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且
+BFC 具有普通容器所没有的一些特性。
 
 ### BFC特性应用
+
 - 同一个 BFC 下外边距会发生折叠
-- BFC 可以包含浮动的元素（清除浮动）由于容器内元素浮动，脱离了文档流，所以容器只剩下边距高度。如果使触发容器的 BFC，那么容器将会包裹着浮动元素。
+- BFC
+  可以包含浮动的元素（清除浮动）由于容器内元素浮动，脱离了文档流，所以容器只剩下边距高度。如果使触发容器的
+  BFC，那么容器将会包裹着浮动元素。
 - BFC 可以阻止元素被浮动元素覆盖
 
 ## 如何避免搜索引擎抓取网页内容
@@ -50,53 +59,67 @@ W3C CSS2.1 规范中的一个概念
 
 ## 输入一个URL后到用户完整看到网页发生了什么?
 
-- 从url到http请求
-从网络和浏览器渲染角度回答回答
+- 从url到http请求 从网络和浏览器渲染角度回答回答
 - 检验url是否合法，不合法通常会转为浏览器默认的搜索引擎搜索。
 - 不合法的话，浏览器就会去用如下方式寻找url对应的ip地址。
-1. 浏览器缓存，查看此url是否被请求过，直接复用以前的IP地址。如果该资源非html并且命中强缓存（max-age小于规定的秒数，则直接复用disk cache或者memory cache，具体采用哪一种应该看浏览器策略，而html文件，chrome会在刷新页面的请求头自动带上max-age = 0，很难命中强缓存）
+
+1. 浏览器缓存，查看此url是否被请求过，直接复用以前的IP地址。如果该资源非html并且命中强缓存（max-age小于规定的秒数，则直接复用disk
+   cache或者memory
+   cache，具体采用哪一种应该看浏览器策略，而html文件，chrome会在刷新页面的请求头自动带上max-age
+   = 0，很难命中强缓存）
 2. 操作系统缓存 hosts文件（但在windows验证过，对https连接无效）
 3. 本地DNS -> 权威DNS服务器 -> 域名DNS服务器 -> 根DNS服务器
-获取到url对应的ip后，开始进行TCP握手：
-1. 客户端向服务器发送请求。SYN置为1，然后序列号为X
-2. 服务器响应， SYN和ACK置为1，确认号为X + 1，序列号为Y
-3. 客户端ACK置为1，序列号为Y + 1,连接建立
-如果是使用https协议，还要进行https握手（TLS协议）
-1. 客户端send client hello（TLS加密套件，TLS版本，第一随机数）
-2. 服务器 Server done（TLS加密套件，TLS版本，第二随机数）
+   获取到url对应的ip后，开始进行TCP握手：
+4. 客户端向服务器发送请求。SYN置为1，然后序列号为X
+5. 服务器响应， SYN和ACK置为1，确认号为X + 1，序列号为Y
+6. 客户端ACK置为1，序列号为Y + 1,连接建立
+   如果是使用https协议，还要进行https握手（TLS协议）
+7. 客户端send client hello（TLS加密套件，TLS版本，第一随机数）
+8. 服务器 Server done（TLS加密套件，TLS版本，第二随机数）
+
 - 发送服务器公钥
 - 发送CA证书
-3. 客户端 client exchange 验证TLS证书，生成随机数，并用公钥加密成预主密钥（第三随机数）。
-4. 服务端使用私钥解密预主密钥
-5. 客户端和服务端用预主密钥+第一随机数+第二随机数计算会话密钥
-此后
-服务器和客户端就使用对称加密对内容进行加密传输（如果是协商缓存，请求会带上If-Modified-Since和If-None-Match（由上一次请求的Last-Modified和ETag得到），此时服务器会根据请求头来返回304资源未更改还是200重新请求。
-从浏览器渲染
-1. 使用具有上下文信息解释html，生成dom树。
-2. 根据important和内联样式，不同选择器优先级，解析css，生成cssom树。
-3. 回流reflow（也叫重排），根据渲染树进行回流，得到节点的几何信息
-4. repaint重绘 根据渲染树以及回流得到的几何信息，得到节点的绝对像素
-5. 将像素发送GPU，展示页面，GPU将多个合成层合并同一个层，并展示页面。
-划重点：使用css3硬件加速，可以让transform、opacity、filters这些动画不会引起回流重绘 。但是对于动画的其它属性，比如background-color这些，还是会引起回流重绘的，不过它还是可以提升这些动画的性能。
-CSS的最终表现分为以下四步：Recalculate Style（计算样式） -> Layout（重排） -> Paint Setup and Paint（重绘） -> Composite Layers（组合层）。由于transform是位于Composite Layers层，所以相对而言使用transform实现的动画效果肯定比left这些更加流畅。
 
+3. 客户端 client exchange
+   验证TLS证书，生成随机数，并用公钥加密成预主密钥（第三随机数）。
+4. 服务端使用私钥解密预主密钥
+5. 客户端和服务端用预主密钥+第一随机数+第二随机数计算会话密钥 此后
+   服务器和客户端就使用对称加密对内容进行加密传输（如果是协商缓存，请求会带上If-Modified-Since和If-None-Match（由上一次请求的Last-Modified和ETag得到），此时服务器会根据请求头来返回304资源未更改还是200重新请求。
+   从浏览器渲染
+6. 使用具有上下文信息解释html，生成dom树。
+7. 根据important和内联样式，不同选择器优先级，解析css，生成cssom树。
+8. 回流reflow（也叫重排），根据渲染树进行回流，得到节点的几何信息
+9. repaint重绘 根据渲染树以及回流得到的几何信息，得到节点的绝对像素
+10. 将像素发送GPU，展示页面，GPU将多个合成层合并同一个层，并展示页面。
+    划重点：使用css3硬件加速，可以让transform、opacity、filters这些动画不会引起回流重绘
+    。但是对于动画的其它属性，比如background-color这些，还是会引起回流重绘的，不过它还是可以提升这些动画的性能。
+    CSS的最终表现分为以下四步：Recalculate Style（计算样式） -> Layout（重排）
+    -> Paint Setup and Paint（重绘） -> Composite
+    Layers（组合层）。由于transform是位于Composite
+    Layers层，所以相对而言使用transform实现的动画效果肯定比left这些更加流畅。
 
 ## vue2和vue3的diff算法有什么异同？
 
-- vue2 使用的双端diff，vue3使用的是基于最长递增子序列的快速diff，能够找出最长的稳定序列，在实际的benchmark有着50%的提升。
+- vue2
+  使用的双端diff，vue3使用的是基于最长递增子序列的快速diff，能够找出最长的稳定序列，在实际的benchmark有着50%的提升。
 - vue2和vue3都基于编译器做了静态节点标记，vue3更将静态节点直接跳出diff循环加快了对比进度。
 - vue3借鉴了纯文本diff算法的预处理阶段，排除了相同的前驱节点和后继节点。
 
 ### vue3 diff
-- 处理前置和后继节点后，会构造source数组初始值为-1，长度等于余下未处理节点的数量。用于存储新的一组子节点在旧的子节点中的位置索引（通过创建一个Map<Node.key, index of new List>降低时间复杂度），将被用于计算最长递增子序列（seq数组存储source数组的最长递增子序列的索引，含义是这些个节点中更新前后顺序没有变化），并用于辅助完成DOM移动操作。
+
+- 处理前置和后继节点后，会构造source数组初始值为-1，长度等于余下未处理节点的数量。用于存储新的一组子节点在旧的子节点中的位置索引（通过创建一个Map<Node.key,
+  index of new
+  List>降低时间复杂度），将被用于计算最长递增子序列（seq数组存储source数组的最长递增子序列的索引，含义是这些个节点中更新前后顺序没有变化），并用于辅助完成DOM移动操作。
 - 卸载和复用，通过旧节点是否在索引表中判断节点是复用还是卸载。
 - 已经更新过的节点数量应该小于新的一组子节点中需要更新的节点数量
 - 新增节点，该key在索引表的值为-1，所以要新增节点。
 
 ## vue3使用函数组件好处
+
 主要是简单性，因为对于函数式组件来说，它无须初始化 data 以及生命周期钩子
 
 ## react-hook-form
+
 - 一个方便开发者管理表单状态的react hook。
 
 ## HTTP 请求
@@ -115,7 +138,7 @@ http2压缩表头，将数据分为多个数据帧。目的时：
 ## HTTP 缓存
 
 - cache-control: private 私有缓存
-- 协商缓存 cache-control: no-cache 
+- 协商缓存 cache-control: no-cache
 - 禁用缓存 no-store
 
 ### no-cache 和 no-store区别
@@ -161,6 +184,7 @@ useLayoutEffect 用于在 DOM
 是更常用的选择，因为它不会阻止后续更新，也不会影响性能。
 
 ## vue3 生命周期 diff算法和react的区别
+
 1. beforeCreate
 2. created
 3. beforeMount
@@ -171,10 +195,10 @@ useLayoutEffect 用于在 DOM
 8. unmounted
 
 ## https链接 tcp握手 网络层
-TODO
-基于链表的插入排序。 买卖股票最入门版。 实现 LRU。 实现一个 Hash 表。
-最大频率栈。 归并排序。 快速排序。 用两个栈模拟队列。
-树的层序 S 形遍历。 合并 K 个有序链表。
+
+TODO 基于链表的插入排序。 买卖股票最入门版。 实现 LRU。 实现一个 Hash 表。
+最大频率栈。 归并排序。 快速排序。 用两个栈模拟队列。 树的层序 S 形遍历。 合并 K
+个有序链表。
 
 ## useDeferredValue
 
@@ -258,10 +282,12 @@ Layer）：负责在源主机和目标主机之间建立端到端的连接，并
 Layer）：负责将数据转换为应用程序可以理解的格式，并提供加密、压缩和解压缩等服务。
 应用层（Application
 Layer）：提供各种网络应用程序，如电子邮件、文件传输和远程登录等。
+
 ### 为什么表现层、会话层具体实现很少
-[为什么表现层、会话层实现很少](https://www.zhihu.com/question/58798786)
-SDP
-会话描述协议Session Description Protocol (SDP) 是一个描述多媒体连接内容的协议，例如分辨率，格式，编码，加密算法等。所以在数据传输时两端都能够理解彼此的数据。本质上，这些描述内容的元数据并不是媒体流本身。
+
+[为什么表现层、会话层实现很少](https://www.zhihu.com/question/58798786) SDP
+会话描述协议Session Description Protocol (SDP)
+是一个描述多媒体连接内容的协议，例如分辨率，格式，编码，加密算法等。所以在数据传输时两端都能够理解彼此的数据。本质上，这些描述内容的元数据并不是媒体流本身。
 
 ## TCP/IP的网络分层模型
 
@@ -341,19 +367,31 @@ export namespace JSX {
 jsx.Element在react中ReactElement，在vue为Vnode
 
 ## script 标签 async defer
+
 1. async 异步加载 渲染不会等待脚本加载完成，脚本加载不会阻塞渲染
-2. defer 延迟加载 渲染会等待脚本加载完成（阻塞DOMContentLoad事件），脚本加载不会阻塞渲染
+2. defer 延迟加载
+   渲染会等待脚本加载完成（阻塞DOMContentLoad事件），脚本加载不会阻塞渲染
+
 - async不保证执行和加载顺序，defer保证
 - async适用无依赖模块，defer适用依赖主页面的外部脚本文件
 - async 一旦下载完就执行,defer要等到文档解析完成后执行。
 - 如果同时设置async和defer,defer不会生效。
+
 ## 事件循环
+
 https://html.spec.whatwg.org/multipage/webappapis.html#queuing-tasks
-- ecma没有规定事件循环的细节，只有html中有event loop的定义
-To coordinate events, user interaction, scripts, rendering, networking, and so forth, user agents must use event loops as described in this section. Each agent has an associated event loop, which is unique to that agent.
+
+- ecma没有规定事件循环的细节，只有html中有event loop的定义 To coordinate events,
+  user interaction, scripts, rendering, networking, and so forth, user agents
+  must use event loops as described in this section. Each agent has an
+  associated event loop, which is unique to that agent.
+
 ## react生命周期
+
 类组件有，函数组件没有
+
 - 初始化阶段
+
 1. constructor 执行
 2. getDerivedStateFromProps 执行
 3. componentWillMount 执行
@@ -361,6 +399,7 @@ To coordinate events, user interaction, scripts, rendering, networking, and so f
 5. componentDidMount执行
 
 - 更新阶段
+
 1. componentWillReceiveProps
 2. getDerivedStateFromProps
 3. shouldComponentUpdate
@@ -370,6 +409,7 @@ To coordinate events, user interaction, scripts, rendering, networking, and so f
 7. componentDidUpdate
 
 - 销毁阶段
+
 1. componentWillUnmount
 
 [react生命周期](https://postimg.cc/dhxXhq9P)
@@ -568,10 +608,11 @@ vnode.index>讲构建source数组时间复杂度降低o(n)。
 - 拆分多个context
 
 ## es module和cjs的相同点和不同点
-- es module 发生在编译器，cjs发生在运行时
-- es module只能静态引入（只能写在js文件顶部） cjs能动态引入（包括引入动态路径，条件引入）
-- es module支持tree sharking cjs不支持
 
+- es module 发生在编译器，cjs发生在运行时
+- es module只能静态引入（只能写在js文件顶部）
+  cjs能动态引入（包括引入动态路径，条件引入）
+- es module支持tree sharking cjs不支持
 
 ## js代码执行
 
@@ -874,14 +915,20 @@ unbatchedUpdates(() => {
 - unbatch(同步)直接进入performSyncWorkOnRoot，进入调和流程，render和commit
 - 否则是useState和setState进入enSureRootIsScheduled调度流程
 - 当前的执行任务类型为 NoContext ，说明当前任务是非可控的，那么会调用
-  flushSyncCallbackQueue 方法。 
+  flushSyncCallbackQueue 方法。
+
 ### 总结
-- performSyncOnRoot 会立刻进入调和阶段 里面调用renderRootSync（render阶段 分为 beginWork（向下调和）和commitUnitOfWork（向上递归））和CommitRoot
-- enSureRootIsScheduled 调度流程 首先 markUpdateLaneFromFiberToRoot 向上递归更新优先级
+
+- performSyncOnRoot 会立刻进入调和阶段 里面调用renderRootSync（render阶段 分为
+  beginWork（向下调和）和commitUnitOfWork（向上递归））和CommitRoot
+- enSureRootIsScheduled 调度流程 首先 markUpdateLaneFromFiberToRoot
+  向上递归更新优先级
 - flushSyncCallbackQueue 立即执行更新队列的任务
 
 ## 调度过程
+
 ### 控制调度入口
+
 入口的函数ensureRootIsScheduled，里面有个关键的判断
 
 ```ts
@@ -890,160 +937,198 @@ if (existingCallbackPriority === newCallbackPriority) {
   return;
 }
 ```
+
 这个就是批量更新的原理，只有第一次会进入调度
 
 对于<code>legacy sync</code>模式最后的更新任务是performSyncWorkOnRoot。
 对于<code>Concurrent</code>模式最后的更新任务是performConcurrentWorkOnRoot
 
 ### 进入调度任务
+
 ```ts
 function scheduleSyncCallback(callback) {
-    if (syncQueue === null) {
-        /* 如果队列为空 */
-        syncQueue = [callback];
-        /* 放入调度任务 */
-        immediateQueueCallbackNode = Scheduler_scheduleCallback(Scheduler_ImmediatePriority, flushSyncCallbackQueueImpl);
-    }else{
-        /* 如果任务队列不为空，那么将任务放入队列中。 */
-        syncQueue.push(callback);
-    }
-} 
+  if (syncQueue === null) {
+    /* 如果队列为空 */
+    syncQueue = [callback];
+    /* 放入调度任务 */
+    immediateQueueCallbackNode = Scheduler_scheduleCallback(
+      Scheduler_ImmediatePriority,
+      flushSyncCallbackQueueImpl,
+    );
+  } else {
+    /* 如果任务队列不为空，那么将任务放入队列中。 */
+    syncQueue.push(callback);
+  }
+}
 ```
-Scheduler_scheduleCallback 就是在调度章节讲的调度的执行方法，本质上就是通过 MessageChannel 向浏览器请求下一空闲帧，在空闲帧中执行更新任务
+
+Scheduler_scheduleCallback 就是在调度章节讲的调度的执行方法，本质上就是通过
+MessageChannel 向浏览器请求下一空闲帧，在空闲帧中执行更新任务
 
 ## fiber
+
 诞生于react16版本，react中最小执行单位。可以理解为react中的vdom。
+
 ### 作用
+
 react15采用递归更新，但项目过大，会造成卡顿。react16以后采用过期时间，17采用优先级，让出执行时间给渲染进程，避免卡顿。等待有空闲时间，再恢复执行，实现了可中断调度机制。
+
 ### react fiber ReactElement和dom之间的关系
+
 - ReactElement可以由JSX语法创建，是用户视图层的表象，上面挂载了props和children，
 - Dom 浏览器表象
 - fiber就是连接Dom和ReactElement桥梁。element变化引起更新流程都会使调和改变。然后对于元素，形成新DOM做视图改变。
 
 ### fiber机构
+
 ```js
-function FiberNode(){
+function FiberNode() {
+  this.tag = tag; // fiber 标签 证明是什么类型fiber。
+  this.key = key; // key调和子节点时候用到。
+  this.type = null; // dom元素是对应的元素类型，比如div，组件指向组件对应的类或者函数。
+  this.stateNode = null; // 指向对应的真实dom元素，类组件指向组件实例，可以被ref获取。
 
-  this.tag = tag;                  // fiber 标签 证明是什么类型fiber。
-  this.key = key;                  // key调和子节点时候用到。 
-  this.type = null;                // dom元素是对应的元素类型，比如div，组件指向组件对应的类或者函数。  
-  this.stateNode = null;           // 指向对应的真实dom元素，类组件指向组件实例，可以被ref获取。
- 
-  this.return = null;              // 指向父级fiber
-  this.child = null;               // 指向子级fiber
-  this.sibling = null;             // 指向兄弟fiber 
-  this.index = 0;                  // 索引
+  this.return = null; // 指向父级fiber
+  this.child = null; // 指向子级fiber
+  this.sibling = null; // 指向兄弟fiber
+  this.index = 0; // 索引
 
-  this.ref = null;                 // ref指向，ref函数，或者ref对象。
+  this.ref = null; // ref指向，ref函数，或者ref对象。
 
-  this.pendingProps = pendingProps;// 在一次更新中，代表element创建
-  this.memoizedProps = null;       // 记录上一次更新完毕后的props
+  this.pendingProps = pendingProps; // 在一次更新中，代表element创建
+  this.memoizedProps = null; // 记录上一次更新完毕后的props
   // 副作用
-  this.updateQueue = null;         // 类组件存放setState更新队列，函数组件存放
-  this.memoizedState = null;       // 类组件保存state信息，函数组件保存hooks信息，dom元素为null
-  this.dependencies = null;        // context或是时间的依赖项
+  this.updateQueue = null; // 类组件存放setState更新队列，函数组件存放
+  this.memoizedState = null; // 类组件保存state信息，函数组件保存hooks信息，dom元素为null
+  this.dependencies = null; // context或是时间的依赖项
 
-  this.mode = mode;                //描述fiber树的模式，比如 ConcurrentMode 模式
+  this.mode = mode; //描述fiber树的模式，比如 ConcurrentMode 模式
 
-  this.effectTag = NoEffect;       // effect标签，用于收集effectList
-  this.nextEffect = null;          // 指向下一个effect
+  this.effectTag = NoEffect; // effect标签，用于收集effectList
+  this.nextEffect = null; // 指向下一个effect
 
-  this.firstEffect = null;         // 第一个effect
-  this.lastEffect = null;          // 最后一个effect
+  this.firstEffect = null; // 第一个effect
+  this.lastEffect = null; // 最后一个effect
 
-  this.expirationTime = NoWork;    // 通过不同过期时间，判断任务是否过期， 在v17版本用lane表示。
+  this.expirationTime = NoWork; // 通过不同过期时间，判断任务是否过期， 在v17版本用lane表示。
 
-  this.alternate = null;           //双缓存树，指向缓存的fiber。更新阶段，两颗树互相交替。
+  this.alternate = null; //双缓存树，指向缓存的fiber。更新阶段，两颗树互相交替。
 }
 ```
 
 ## fiberRoot和rootFiber
+
 - 应用根节点
 - reactDom.render 渲染出来叫rootFiber，可以多个
 
 ## workInProgress 树
-是在内存上构建的fiber树，所有更新都发生在workInProgress树，更新完就是最新的状态，此时让fiberRoot.current = workInProgress树（通过alternate属性连接），则渲染视图。
+
+是在内存上构建的fiber树，所有更新都发生在workInProgress树，更新完就是最新的状态，此时让fiberRoot.current
+= workInProgress树（通过alternate属性连接），则渲染视图。
 
 ## react架构
+
 Scheduler - reconciler- render（react dom）
 
 ### render两个阶段
+
 render会先调用renderRootSync
+
 ```js
-function renderRootSync(root,lanes){
-    workLoopSync();
-    /* workLoop完毕后，证明所有节点都遍历完毕，那么重置状态，进入 commit 阶段 */
-    workInProgressRoot = null;
-    workInProgressRootRenderLanes = NoLanes;
+function renderRootSync(root, lanes) {
+  workLoopSync();
+  /* workLoop完毕后，证明所有节点都遍历完毕，那么重置状态，进入 commit 阶段 */
+  workInProgressRoot = null;
+  workInProgressRootRenderLanes = NoLanes;
 }
 ```
+
 ```js
 // legacy mode
 function workLoopSync() {
   /* 循环执行 performUnitOfWork ，一直到 workInProgress 为空 */
   while (workInProgress !== null) {
-  // concurrent mode
-  // while (workInProgress !== null & !sholdYield()) {
+    // concurrent mode
+    // while (workInProgress !== null & !sholdYield()) {
     performUnitOfWork(workInProgress);
   }
 }
 ```
-- beginWork 逐级向下对children调和，实例类组件，执行函数组件，打上不同的effect tag
-- completeUnitOfWork 向上归并，由sibling则返回兄弟，没有则返回父级。期间形成effect链，进行事件收集，处理style，className。
+
+- beginWork 逐级向下对children调和，实例类组件，执行函数组件，打上不同的effect
+  tag
+- completeUnitOfWork
+  向上归并，由sibling则返回兄弟，没有则返回父级。期间形成effect链，进行事件收集，处理style，className。
 
 ### commit阶段
+
 处理componentDidMount ，函数组件的 useEffect ，useLayoutEffect ；
 
 维护节点状态 添加节点，更新节点，删除节点
 
 - beforeMutation 执行dom操作前 getSnapshotBeforeUpdate 异步调用useEffect
-- mutation 执行dom操作  置空 ref ，在 ref 章节讲到对于 ref 的处理。
-对新增元素，更新元素，删除元素。进行真实的 DOM 操作。
-- layout 执行dom操作后 对类组件来说会执行生命周期，setState回调，函数组件执行useLayoutEffect钩子
-如果有 ref ，会重新赋值 ref
+- mutation 执行dom操作 置空 ref ，在 ref 章节讲到对于 ref 的处理。
+  对新增元素，更新元素，删除元素。进行真实的 DOM 操作。
+- layout 执行dom操作后
+  对类组件来说会执行生命周期，setState回调，函数组件执行useLayoutEffect钩子
+  如果有 ref ，会重新赋值 ref
 
 ### React fiber如何找到state发生变化的组件
+
 假设组件A发生更新，先向上递归更新父级链的childLanes，接下来从RootFiber向下调和时，发现childLanes等于当前更新优先级，说明它的child链有更新任务，否则向下调和。
 
 ## useDeferredValue
-useDeferredValue 作为性能优化的手段。当你的 UI 某个部分重新渲染很慢、没有简单的优化方法，同时你又希望避免它阻塞其他 UI 的渲染时，使用 useDeferredValue 很有帮助。
+
+useDeferredValue 作为性能优化的手段。当你的 UI
+某个部分重新渲染很慢、没有简单的优化方法，同时你又希望避免它阻塞其他 UI
+的渲染时，使用 useDeferredValue 很有帮助。
 
 ## React 生命周期
-- componentDidCatch static getDerivedStateFromError
-捕获错误用
-- componentDidMount() 
-React 将会在组件被添加到屏幕上 （挂载） 后调用它。
-设置数据获取、订阅监听事件或操作 DOM 节点的常见位置。
-- componentDidUpdate(prevProps, prevState, snapshot?)
-React 会在你的组件更新了 props 或 state 重新渲染后立即调用它。这个方法不会在首次渲染时调用。
-- componentWillUnmount()
-React 会在你的组件被移除屏幕（卸载）之前调用它。此方法常常用于取消数据获取或移除监听事件。
+
+- componentDidCatch static getDerivedStateFromError 捕获错误用
+- componentDidMount() React 将会在组件被添加到屏幕上 （挂载） 后调用它。
+  设置数据获取、订阅监听事件或操作 DOM 节点的常见位置。
+- componentDidUpdate(prevProps, prevState, snapshot?) React 会在你的组件更新了
+  props 或 state 重新渲染后立即调用它。这个方法不会在首次渲染时调用。
+- componentWillUnmount() React
+  会在你的组件被移除屏幕（卸载）之前调用它。此方法常常用于取消数据获取或移除监听事件。
 - getSnapshotBeforeUpdate(prevProps, prevState)
-在渲染前获取dom信息，有点像useLayoutEffect
+  在渲染前获取dom信息，有点像useLayoutEffect
 
 ## setState之后
+
 setState本质是调用enqueueSetState
+
 ```js
- const update = createUpdate(eventTime, lane);
-    enqueueUpdate(fiber, update, lane);
-    const root = scheduleUpdateOnFiber(fiber, lane, eventTime);
+const update = createUpdate(eventTime, lane);
+enqueueUpdate(fiber, update, lane);
+const root = scheduleUpdateOnFiber(fiber, lane, eventTime);
 ```
+
 函数组件useState
+
 ```js
 function dispatchAction(fiber, queue, action) {
-    var lane = requestUpdateLane(fiber);
-    scheduleUpdateOnFiber(fiber, lane, eventTime);
+  var lane = requestUpdateLane(fiber);
+  scheduleUpdateOnFiber(fiber, lane, eventTime);
 }
 ```
+
 最终都会调用scheduleUpdateOnFiber
-- 在 unbatch 情况下，会直接进入到 performSyncWorkOnRoot ，接下来会进入到 调和流程，比如 render ，commit。
-- 那么任务是 useState 和 setState，那么会进入到 else 流程，那么会进入到 ensureRootIsScheduled 调度流程。
-- 当前的执行任务类型为 NoContext ，说明当前任务是非可控的，那么会调用 flushSyncCallbackQueue 方法。setTimeout Promise.resolve().then()
+
+- 在 unbatch 情况下，会直接进入到 performSyncWorkOnRoot ，接下来会进入到
+  调和流程，比如 render ，commit。
+- 那么任务是 useState 和 setState，那么会进入到 else 流程，那么会进入到
+  ensureRootIsScheduled 调度流程。
+- 当前的执行任务类型为 NoContext ，说明当前任务是非可控的，那么会调用
+  flushSyncCallbackQueue 方法。setTimeout Promise.resolve().then()
 
 ## node 不是单进程
+
 <!-- https://stackoverflow.com/questions/61550822/why-node-js-spins-7-threads-per-process -->
 
 ## 浏览器解释
+
 1. Process HTML markup and build the DOM tree.
 2. Process CSS markup and build the CSSOM tree.
 3. Combine the DOM and CSSOM into a render tree.
@@ -1051,43 +1136,58 @@ function dispatchAction(fiber, queue, action) {
 5. Paint the individual nodes to the screen.
 
 ## 基础类型真的存在栈区？引用类型真的存在堆区吗？
-答案是否定的。
-ECMA没有规定Javascript内存分配规则。
+
+答案是否定的。 ECMA没有规定Javascript内存分配规则。
 [JavaScript中变量存储在堆中还是栈中](https://www.zhihu.com/question/482433315)
 v8引擎实现:
+
 1. 字符串保存在堆上，栈上保存字符串的引用，相同字符串引用相同地址。
 2. 小整数保存在栈上，双精度浮点型保存在堆上。bigint
 3. 其他类型：引擎初始化时分配唯一地址，栈中的变量存的是唯一的引用。
 
 ## HTTPS握手
+
 通过TCP连接
+
 1. 客户端send client hello（TLS加密套件，TLS版本，第一随机数）
 2. 服务器 Server done（TLS加密套件，TLS版本，第二随机数）
+
 - 发送服务器公钥
 - 发送CA证书
-3. 客户端 client exchange 验证TLS证书，生成随机数，并用公钥加密成预主密钥（第三随机数）。
+
+3. 客户端 client exchange
+   验证TLS证书，生成随机数，并用公钥加密成预主密钥（第三随机数）。
 4. 服务端使用私钥解密预主密钥
-5. 客户端和服务端用预主密钥+第一随机数+第二随机数计算会话密钥
-握手完成
+5. 客户端和服务端用预主密钥+第一随机数+第二随机数计算会话密钥 握手完成
+
 ### 补充
+
 - 性能最好是TLS1.2，安全性最好是TLS1.3
 - TLS证书除了记录域名有效期，非对称算法
 
 ## 跨域
+
 <!-- https://aws.amazon.com/cn/what-is/cross-origin-resource-sharing/ -->
+
 我们常说的跨域其实是指跨源资源共享，英文简称cors。同源策略是浏览器特有的安全策略，限制不同源资源交换。当两个资源的协议、域名和端口都相等时才同源。
 
 ## CORS的作用
+
 早期互联网时代，CSRF（跨站请求伪造）时有发生。在假冒网站向目的网站进行跨站请求时，会携带用户cookie进行请求，假装自己时用户进行操作。
 为此，现在所有浏览器都实现同源策略。
 
 ## CORS请求分为简单请求和复杂请求
+
 简单请求要满足同时满足
+
 - 请求方法是GET POST HEAD
 - 请求头只能为 Accept-Language、Accept 或 Content-Language
-- Accept 只能为 multipart/form-data、application/x-www-form-urlencoded 或 text/plain  
-否认则称为复杂请求
-复杂请求会额外发生一个option请求，称为预检请求，作用是先检查服务器是否允许请求，避免产生意外的更改。
+- Accept 只能为 multipart/form-data、application/x-www-form-urlencoded 或
+  text/plain
+  \
+  否认则称为复杂请求
+  复杂请求会额外发生一个option请求，称为预检请求，作用是先检查服务器是否允许请求，避免产生意外的更改。
+
 ```
 Access-Control-Allow-Headers: Content-Type
 
@@ -1099,9 +1199,11 @@ Access-Control-Max-Age: 60(s)
 ```
 
 ## typescript ! 非空断言操作符
+
 具体而言，x! 将从 x 值域中排除 null 和 undefined 。
 
 ## HTTP 压缩算法
+
 - LZ77 霍夫曼编码
 - DEFLATE
 - GZIP
@@ -1109,17 +1211,23 @@ Access-Control-Max-Age: 60(s)
 - Brotli 霍夫曼编码
 
 ## import * 会做tree-shaking吗?
-import * as modules from 'esmodule' 会做 tree-shaking。tree-shaking 是一种优化技术，它可以去除未使用的模块。这可以减少代码大小
+
+import * as modules from 'esmodule' 会做 tree-shaking。tree-shaking
+是一种优化技术，它可以去除未使用的模块。这可以减少代码大小
+
 1. 浏览器将解析 import * as modules from 'esmodule' 语句。
 2. 浏览器将找到所有导入的模块。
 3. 浏览器将检查每个模块是否被使用。
 4. 浏览器将删除未使用的模块。
 
 ## script 标签的 impoerMap
+
 请查阅mdn
 
 ## tsup转译的require函数(cjs)
+
 本质是闭包
+
 ```js
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
@@ -1135,79 +1243,105 @@ var require_package = __commonJS({
   }
 });
 ```
+
 ## Esmodule 和 cjs有什么区别
+
 - cjs允许动态加载
+
 ```js
-const module = require(`${name}.js`)
+const module = require(`${name}.js`);
 ```
+
 - cjs同步加载, module异步加载
 - cjs发生在运行时, module发生在编译时
 - cjs输出值拷贝, module是值引用
 
 ## .d.ts 模块类型声明文件
-在 TypeScript 中，.d.ts 文件是模块的类型声明文件。它用于声明模块中导出的类型，以便其他模块可以使用这些类型。
+
+在 TypeScript 中，.d.ts
+文件是模块的类型声明文件。它用于声明模块中导出的类型，以便其他模块可以使用这些类型。
+
 ```ts
 // tsup.config.ts
-import { defineConfig } from 'tsup';
+import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ["src/index.ts"],
   clean: true,
   bundle: true,
   splitting: true,
-  outDir: 'dist',
-  format: ['cjs', 'esm'],
+  outDir: "dist",
+  format: ["cjs", "esm"],
   shims: true,
   dts: true,
 });
 ```
 
 ## MPA 多页应用
-服务器加载多个 HTML 页面的应用程序。它的特征就是每个页面彼此独立，且有完整的 HTML 内容。当你点击 a 标签跳转到另一个页面时，浏览器会像服务端发送请求并且重新加载页面。传统的模板技术 JSP、 Django，包括目前比较火的 Astro 框架都是采用 MPA 的方案。
+
+服务器加载多个 HTML 页面的应用程序。它的特征就是每个页面彼此独立，且有完整的
+HTML 内容。当你点击 a
+标签跳转到另一个页面时，浏览器会像服务端发送请求并且重新加载页面。传统的模板技术
+JSP、 Django，包括目前比较火的 Astro 框架都是采用 MPA 的方案。
 
 ## SPA 单页应用
-当浏览器拿到 HTML 之后，会请求页面所需的 JS 代码，通过执行 JS 代码来完成页面渲染。
+
+当浏览器拿到 HTML 之后，会请求页面所需的 JS 代码，通过执行 JS
+代码来完成页面渲染。
 
 ## SSR
+
 同构架构
+
 1. 首屏拿到完整html
 2. 下载和执行 JS，完成 hydration。
-3. 后续路由跳转都由 JS 掌管。
-缺点
-1. 全量下载客户端js
-2. 执行全量组件Hydration
-3. 造成页面首屏TTI(可交互时间提高)
+3. 后续路由跳转都由 JS 掌管。 缺点
+4. 全量下载客户端js
+5. 执行全量组件Hydration
+6. 造成页面首屏TTI(可交互时间提高)
 
 ## SSR 外部化
+
 当运行 SSR 时依赖会由 Vite 的 SSR 转换模块系统作外部化。这会同时提速开发与构建。
 
-如果依赖需要被 Vite 的管道转换，例如因为其中使用了未经过转译的 Vite 特性，那么它们可以被添加到 ssr.noExternal 中。
+如果依赖需要被 Vite 的管道转换，例如因为其中使用了未经过转译的 Vite
+特性，那么它们可以被添加到 ssr.noExternal 中。
 
-区别是否对代码进行打包
-https://cn.vuejs.org/api/ssr.html
+区别是否对代码进行打包 https://cn.vuejs.org/api/ssr.html
 
 ## SSR和CSR情景使用区别
-- 对于后台管理系统、数据中台等 toB 项目，由于对首屏要求不高，且用户量较少，一般采取 CSR 简化开发流程，快速交付项目
-- 对于官网首页、电商首页等 toC 项目，首屏速度直接关联用户的留存率，且良好的 SEO 也是提升转化率前提，因此需要依赖 SSR 挖掘进一步的可能
+
+- 对于后台管理系统、数据中台等 toB
+  项目，由于对首屏要求不高，且用户量较少，一般采取 CSR
+  简化开发流程，快速交付项目
+- 对于官网首页、电商首页等 toC 项目，首屏速度直接关联用户的留存率，且良好的 SEO
+  也是提升转化率前提，因此需要依赖 SSR 挖掘进一步的可能
 
 ## http1.1队头阻塞
+
 任何保证有序性的传输方式，但很难避免队头阻塞
 由于http采用一问一答的通讯方式，当先请求的文件过大传输时间过长，就会阻塞后面走远的加载。根本原因是必须完整的传输资源。
+
 ### 解决方式
+
 - 浏览器允许对于同一域名最多有6个并行的tcp连接
 - 将资源分配在多个域名
 
 ## http1.2解决http队头阻塞
+
 在资源块前添加帧（里面有id），允许在单个TCP连接上通过交错排列多路传输多个资源。通过帧ID组装资源。
 
 ## cookie
-1. Chrome：对于单个Cookie，Chrome 80之前的版本限制为大约 4KB（4093字节），Chrome 80及之后的版本将限制提高到约 16KB（16383字节）。
+
+1. Chrome：对于单个Cookie，Chrome 80之前的版本限制为大约 4KB（4093字节），Chrome
+   80及之后的版本将限制提高到约 16KB（16383字节）。
 
 2. Firefox：对于单个Cookie，Firefox 3.5及之后的版本限制为大约 4KB（4096字节）。
 
 3. Safari：对于整个域名的所有Cookie总大小，Safari限制为大约 6MB。
 
-4. Internet Explorer/Edge：对于单个Cookie，Internet Explorer 11和Microsoft Edge限制为大约 4KB（4095字节）。
+4. Internet Explorer/Edge：对于单个Cookie，Internet Explorer 11和Microsoft
+   Edge限制为大约 4KB（4095字节）。
 
 对于子域名，cookie默认还是携带的
 
@@ -1215,16 +1349,22 @@ https://cn.vuejs.org/api/ssr.html
 name       value                            domain      path EXPIRES                SIZE httponly secure    priority
 sessionid	edb4646f1xxxed9680xxxx1d416fadb1	.juejin.cn	/	2024-07-22T20:01:35.512Z	41	  ✓				          Medium
 ```
+
 ### same site
+
 same site 有strict lax none
+
 - 禁止第三方请求携带cookie
 - 允许第三方get提交表单，或图片请求
 - 默认都会带上cookie
+
 ### domain
+
 显式指定域：如果设置了domain属性，并指定了一个具体的域名，那么该Cookie只能在该域名及其子域名下被发送和访问
 隐式指定域：如果未指定domain属性（或domain属性为空），则该Cookie的域会自动设置为设置该Cookie的页面所在的域名
 
 ## path
+
 显式指定路径：如果设置了path属性，并指定了一个具体的路径，那么该Cookie只能在该路径下被发送和访问。
 
 例如，设置path="/example"的Cookie只能在服务器上的/example路径及其子路径下访问，而无法在其他路径下访问。
@@ -1234,32 +1374,35 @@ same site 有strict lax none
 例如，如果在路径/example下的页面中设置了一个Cookie，而未指定path属性，那么该Cookie只能在/example路径及其子路径下访问。
 
 ## TCP 队头阻塞
+
 https://zhuanlan.zhihu.com/p/330300133
 
 ## 小心monkey方法
+
 Object.prototype.toString.call
 
 ## "If-None-Match" "If-Modified-Since"
 
 ## no-cache 和 max-age区别
+
 https://stackoverflow.com/questions/1046966/whats-the-difference-between-cache-control-max-age-0-and-no-cache
 
 ## 回流 reflow的原因
+
 - 页面首次渲染
 - 浏览器窗口大小发生改变
 - 元素尺寸或位置发生改变
 - 元素内容变化（字体大小）
 - 添加或删除可见的dom元素
-- 激活css伪类（:hover）
-查询位置信息或调用滚动api时
+- 激活css伪类（:hover） 查询位置信息或调用滚动api时
 - clientWidth、clientHeight、clientTop、clientLeft
-offsetWidth、offsetHeight、offsetTop、offsetLeft
-scrollWidth、scrollHeight、scrollTop、scrollLeft
+  offsetWidth、offsetHeight、offsetTop、offsetLeft
+  scrollWidth、scrollHeight、scrollTop、scrollLeft
 - scrollIntoView()、scrollIntoViewIfNeeded() scrollTo()
-- getComputedStyle()
-getBoundingClientRect()
+- getComputedStyle() getBoundingClientRect()
 
 ## 避免回流
+
 - 避免使用table布局
 - 尽可能在dom树最末端改变class
 - 避免设置多层内联样式
@@ -1272,12 +1415,14 @@ getBoundingClientRect()
 - 对具有复杂动画的元素使用绝对定位，使它脱离文档流，否则会引起父元素及后续元素频繁回流。
 
 ## react diff算法
+
 - 从左到右对比复用旧节点，如果不能复用，则停止对比，记录位置。
 - 如果上一轮对比完所有新节点，则移除多余的旧节点。
 - 如果新节点还没有用完，则从停止的位置继续开始对比新节点，匹配成功则复用，没匹配成功则打上Placement标记。
 - 所有对比完成后，删除没有复用的旧节点。
 
 ## react HOC 注意事项
+
 - 谨慎修改原型链如：覆盖生命周期方法
 - 不要在函数组件内部或类组件render函数中使用HOC
 - ref的处理：ref严格来说不是ref，可以使用forwardRef作ref的转发
@@ -1285,9 +1430,13 @@ getBoundingClientRect()
 - 继承静态属性（分为手动继承 hoist-non-react-statics 自动拷贝所有的静态方法:）
 
 ## 权限拦截 HOC
+
 1. 需要权限的页面或者组件，用 HOC 包裹，并输入唯一的权限签名。
-2. 用 Context 上下文保存全局的权限菜单列表，用 Provider 注入异步获取到的权限菜单。
-3. HOC 中用 Consumer 获取权限列表，并且和签名做匹配，如果有权限，就展示，如果没有权限，展示默认没有权限组件。 
+2. 用 Context 上下文保存全局的权限菜单列表，用 Provider
+   注入异步获取到的权限菜单。
+3. HOC 中用 Consumer
+   获取权限列表，并且和签名做匹配，如果有权限，就展示，如果没有权限，展示默认没有权限组件。
+
 ```js
 export const Permission = React.createContext([]) 
 
@@ -1305,27 +1454,41 @@ export default function Index(){
     </Permission.Provider>
 }
 ```
+
 ```js
 /* 没有权限 */
-function NoPermission (){
-    return <div>您暂时没有权限，请联系管理员开通权限！</div>
+function NoPermission() {
+  return <div>您暂时没有权限，请联系管理员开通权限！</div>;
 }
 /* 编写HOC */
-export function PermissionHoc(authorization){
-    return function(Component){ 
-        return function Home (props){
-            const matchPermission =(value,list)=> list.indexOf(value) /* 匹配权限 */
-            return <Permission.Consumer>
-                {
-                    (permissionList) => matchPermission(authorization,permissionList) >= 0 ? <Component  {...props} /> : <NoPermission />
-                }
-            </Permission.Consumer>
-        }
-    }
+export function PermissionHoc(authorization) {
+  return function (Component) {
+    return function Home(props) {
+      const matchPermission = (value, list) =>
+        list.indexOf(value); /* 匹配权限 */
+      return (
+        <Permission.Consumer>
+          {(permissionList) =>
+            matchPermission(authorization, permissionList) >= 0
+              ? <Component {...props} />
+              : <NoPermission />}
+        </Permission.Consumer>
+      );
+    };
+  };
 }
 ```
+
 绑定权限
+
 ```js
 @PermissionHoc('writeDoc')  // 绑定文档录入页面
 export default class Index extends React.Component{}
+```
+
+## Nest 踩坑
+
+```ts
+import { PrismaService } from '../prisma/prisma.service'
+constructor(private prisma: PrismaService) {}
 ```
