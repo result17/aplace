@@ -1487,8 +1487,8 @@ export default class Index extends React.Component{}
 ```
 
 ## Nest 踩坑
-
+使用type引入，会使得 PrismaService 依赖注入失败
 ```ts
-import { PrismaService } from '../prisma/prisma.service'
+import { type PrismaService } from '../prisma/prisma.service'
 constructor(private prisma: PrismaService) {}
 ```
