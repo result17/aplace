@@ -1383,7 +1383,7 @@ public:
         ListNode* slow = head;
         while (slow && slow->next) {
             ListNode* fast = slow->next;
-            // 交换过程
+            // swap
             pre->next = fast;
             slow->next = fast->next;
             fast->next = slow;

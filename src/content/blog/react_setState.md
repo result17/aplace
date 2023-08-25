@@ -87,7 +87,7 @@ flushSync 中的 setState > 正常执行上下文中 setState > setTimeout ，Pr
 在不是 pureComponent 组件模式下， setState 不会浅比较两次 state 的值，只要调用 setState，在没有其他优化手段的前提下，就会执行更新。但是 useState 中的 dispatchAction 会默认比较两次 state 是否相同，然后决定是否更新组件。
 
 ## 函数组件模拟componentWillMount
-使用useLayoutEffect模拟, useLayoutEffect 是 useEffect 的一个版本，在浏览器重新绘制屏幕之前触发。
+使用useLayoutEffect模拟, 在浏览器重新绘制屏幕之前触发。
 ```js
 useLayoutEffect(() => {
   console.log('函数组件模拟componentWillMount')

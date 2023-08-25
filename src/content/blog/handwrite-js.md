@@ -15,7 +15,7 @@ description: js基本功能函数简单实现
 const format = (n) => {
   let ans = "";
   let count = 0;
-  let abs = Math.abs(n)
+  let abs = Math.abs(n);
   while (abs) {
     let rest = abs % 10;
     abs = parseInt(abs / 10);
@@ -28,7 +28,7 @@ const format = (n) => {
   while (i > 0) {
     res += ans[--i];
   }
-  return `${n < 0 ? '-' : ''}${res}`;
+  return `${n < 0 ? "-" : ""}${res}`;
 };
 ```
 
@@ -115,8 +115,10 @@ console.log(a === b);
 ```
 
 ## Promise
+
 <!-- https://juejin.cn/post/7242493101088555064 -->
 <!-- https://juejin.cn/post/7250383386183221285 -->
+
 ```ts
 enum IPromiseState {
   Pending,
@@ -528,18 +530,18 @@ function deepClone(source) {
           target[prop] = val;
         }
       }
-      Object.defineProperty(target, prop, descriptor)
+      Object.defineProperty(target, prop, descriptor);
     }
   }
 
   if (Object.isFrozen(source)) {
-    Object.freeze(target)
+    Object.freeze(target);
   } else if (Object.isSealed(source)) {
-    Object.seal(target)
+    Object.seal(target);
   } else if (!Object.isExtensible(source)) {
-    Object.preventExtensions(target)
+    Object.preventExtensions(target);
   }
-
+  sourceMap.clear();
   return target;
 }
 ```
@@ -722,6 +724,7 @@ function toggle(index: number) {
 ```
 
 ## rust 快速排序
+
 ```rs
 fn quick_sort(array: &mut [i32]) {
     if array.len() <= 1 {
@@ -750,6 +753,7 @@ fn quick_sort(array: &mut [i32]) {
 ```
 
 ## css中间自适应两边定宽
+
 ```css
 body {
   width: 100%;
@@ -772,6 +776,7 @@ body {
   background-color: green;
 }
 ```
+
 ```css
 body {
   width: 100%;
@@ -801,23 +806,25 @@ body {
 ```
 
 ## new模拟
+
 ```js
 function newOperator(ctor, ...args) {
-  if (typeof ctor !== 'function') {
-    throw new TypeError('Type Error');
+  if (typeof ctor !== "function") {
+    throw new TypeError("Type Error");
   }
   // 以ctor.prototype为原型创建一个对象
   const obj = Object.create(ctor.prototype);
   // 执行构造函数并将this绑定到新创建的对象上。
   const res = ctor.apply(obj, args);
 
-  const isObject = typeof res === 'object' && res !== null;
-  const isFunction = typeof res === 'function';
+  const isObject = typeof res === "object" && res !== null;
+  const isFunction = typeof res === "function";
   return isObject || isFunction ? res : obj;
 }
-
 ```
+
 ## simple p limit
+
 ```js
 async function sleep(n, name = "test") {
   return new Promise((resolve) => {
@@ -830,12 +837,13 @@ async function sleep(n, name = "test") {
 }
 
 async function asyncPool({ limit, tasks }) {
-  // 同一转化为promise，
-  const promiseTasks = tasks.map(async (task) => await task());
+
 
   const taskPool = new Set();
 
-  for (const promiseTask of promiseTasks) {
+  for (const task of tasks) {
+    const fn = async task => await task()
+    const promiseTask = fn(task)
     taskPool.add(promiseTask);
 
     const clean = () => {
@@ -855,14 +863,15 @@ async function start() {
   await asyncPool({
     limit: 2,
     tasks: [
-      () => sleep(1, "eating"),
       () => sleep(3, "sleeping"),
       () => sleep(5, "gaming"),
-      () => sleep(1, "gyming"),
+      () => sleep(1, "eating"),
+      () => sleep(1, "drinking"),
       () => sleep(3, "coding"),
       () => sleep(5, "running"),
-      () => sleep(6, "crying")
-    ]
+      () => sleep(6, "crying"),
+    ],
   });
 }
+start()
 ```
