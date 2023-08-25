@@ -817,3 +817,52 @@ function newOperator(ctor, ...args) {
 }
 
 ```
+## simple p limit
+```js
+async function sleep(n, name = "test") {
+  return new Promise((resolve) => {
+    console.log(n, name, "start");
+    setTimeout(() => {
+      console.log(n, name, "end------------");
+      resolve(n, name);
+    }, n * 1000);
+  });
+}
+
+async function asyncPool({ limit, tasks }) {
+  // 同一转化为promise，
+  const promiseTasks = tasks.map(async (task) => await task());
+
+  const taskPool = new Set();
+
+  for (const promiseTask of promiseTasks) {
+    taskPool.add(promiseTask);
+
+    const clean = () => {
+      taskPool.delete(promiseTask);
+    };
+
+    promiseTask.then(clean, clean);
+
+    while (taskPool.size >= limit) {
+      await Promise.race(taskPool);
+    }
+  }
+  return Promise.allSettled(promiseTasks);
+}
+
+async function start() {
+  await asyncPool({
+    limit: 2,
+    tasks: [
+      () => sleep(1, "eating"),
+      () => sleep(3, "sleeping"),
+      () => sleep(5, "gaming"),
+      () => sleep(1, "gyming"),
+      () => sleep(3, "coding"),
+      () => sleep(5, "running"),
+      () => sleep(6, "crying")
+    ]
+  });
+}
+```
