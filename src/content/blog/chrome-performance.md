@@ -24,7 +24,7 @@ FCP 是 First Contentful Paint 的缩写，指的是页面上第一个可视内�
 
 FCP 的理想值为 0.5 秒或更低。如果 FCP 的值超过 0.5 秒，则表明页面加载速度较慢，并且用户可能会遇到糟糕的体验。
 
-可以使用 Chrome DevTools 来测量 FCP。在 Ch
+可以使用 Chrome DevTools 来测量 FCP.
 
 ## LCP
 LCP 是 Largest Contentful Paint 的缩写，指的是页面上最大的可视元素（通常是图片或视频）在首次完全可见所需的时间。LCP 是衡量页面加载速度的一个重要指标，因为它可以帮助用户了解页面在加载过程中的体验。

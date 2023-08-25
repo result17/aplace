@@ -191,7 +191,7 @@ useLayoutEffect 用于在 DOM
 4. mounted
 5. beforeUpdate
 6. updated
-7. beforeunmount
+7. beforeUnmount
 8. unmounted
 
 ## https链接 tcp握手 网络层
@@ -1487,8 +1487,209 @@ export default class Index extends React.Component{}
 ```
 
 ## Nest 踩坑
+
 使用type引入，会使得 PrismaService 依赖注入失败
+
 ```ts
 import { type PrismaService } from '../prisma/prisma.service'
 constructor(private prisma: PrismaService) {}
 ```
+
+## Fiber更新机制
+
+## 初始化
+
+- 创建fiberRoot和rootFiber
+
+```ts
+function createFiberRoot(containerInfo, tag) {
+  /* 创建一个root */
+  const root = new FiberRootNode(containerInfo, tag);
+  const rootFiber = createHostRootFiber(tag);
+  root.current = rootFiber;
+  return root;
+}
+```
+
+创建FiberRoot的函数是FiberRootNode，创建RootFiber的函数是CreateHostRootFiber
+FiberRoot.current 指向 rootFiber
+
+## RootFiber 渲染阶段
+
+## workInProgress 和 current
+
+- 正在内存中构建的 Fiber 树称为 workInProgress Fiber
+  树。在一次更新中，所有的更新都是发生在 workInProgress
+  树上。在一次更新之后，workInProgress 树上的状态是最新的状态，那么它将变成
+  current 树用于渲染视图。
+- 正在视图层渲染的树叫做current树 接下来会到 rootFiber
+  的渲染流程，首先会复用当前 current 树（ rootFiber ）的 alternate 作为
+  workInProgress ，如果没有 alternate （初始化的 rootFiber 是没有 alternate
+  ），那么会创建一个 fiber 作为 workInProgress 。会用 alternate 将新创建的
+  workInProgress 与 current 树建立起关联
+
+## 更新 RootFiber
+
+重新创建一颗 workInProgresss 树，复用当前 current 树上的 alternate ，作为新的
+workInProgress ，由于初始化 rootfiber 有 alternate ，所以对于剩余的子节点，React
+还需要创建一份，和 current 树上的 fiber 建立起 alternate
+关联。渲染完毕后，workInProgresss 再次变成 current 树。
+
+## fiber reconciler核心、
+
+render阶段和commit阶段
+
+- render阶段
+  workLoop是每一个单元的调度器，渲染没有被中断的话，workLoop会遍历fiber树。
+  执行performUnitOfWork函数（beginWork和commitWork）
+- beginWork
+  向下调和过程。有fiberRoot按照child指针向下调和，执行函数组件，实例类组件，子组件diff调和，打上不同effect
+  tag
+- completeUnitOfWork
+  向上归并过程，如果有兄弟节点，则返回sliding，没有则返回return父节点，期间可以形成effectList，创建dom，对dom元素进行书简收集，处理style和className
+
+## props children
+
+- 针对 element 节点，通过 cloneElement 混入 props ；
+- 针对函数，直接传递参数，执行函数。
+
+```js
+function Son(props) {
+  console.log(props); // {name: "alien", age: "28", mes: "let us learn React !"}
+  return <div>hello,world</div>;
+}
+function Father(prop) {
+  return React.cloneElement(prop.children, { mes: "let us learn React !" });
+}
+function Index() {
+  return (
+    <Father>
+      <Son name="alien" age="28" />
+    </Father>
+  );
+}
+```
+
+<!-- 类组件还有个好处,方便获取组件实例 -->
+
+```js
+// Form组件混入prop
+    render(){
+        const { children } = this.props
+        const renderChildren = []
+        React.Children.forEach(children,(child)=>{
+            if(child.type.displayName === 'formItem'){
+                const { name } = child.props
+                /* 克隆`FormItem`节点，混入改变表单单元项的方法 */
+                const Children = React.cloneElement(child,{ 
+                    key:name ,                             /* 加入key 提升渲染效果 */
+                    handleChange:this.setValue ,           /* 用于改变 value */
+                    value:this.state.formData[name] ||  '' /* value 值 */
+                },child.props.children)
+                renderChildren.push(Children)
+            }
+        })
+        return renderChildren
+    }
+```
+
+## react 生命周期
+
+- constructor 执行 constructClassInstance 函数，用来实例化 React 组件，组件中
+  constructor 就是在这里执行的。
+- constructor
+- getDerivedStateFromProps
+- componentWillMount render
+- render
+
+- componentWillUnMount commit
+
+```js
+function commitLifeCycles(finishedRoot,current,finishedWork){
+     switch (finishedWork.tag){                             /* fiber tag 在第一节讲了不同fiber类型 */
+        case ClassComponent: {                              /* 如果是 类组件 类型 */
+             const instance = finishedWork.stateNode        /* 类实例 */
+             if(current === null){                          /* 类组件第一次调和渲染 */
+                instance.componentDidMount() 
+             }else{                                         /* 类组件更新 */
+                instance.componentDidUpdate(prevProps,prevState，instance.__reactInternalSnapshotBeforeUpdate); 
+             }
+        }
+     }
+}
+```
+
+- 更新阶段
+- updateClassComponent
+- if (!getDerivedStateFromProps) componentWillReceiveProps
+- getDerivedStateFromProps
+- shouldComponentUpdate 接下来执行生命周期shouldComponentUpdate，传入新的 props
+  ，新的 state ，和新的 context ，返回值决定是否继续执行 render
+  函数，调和子节点。这里应该注意一个问题，getDerivedStateFromProps
+  的返回值可以作为新的 state ，传递给 shouldComponentUpdate 。
+- componentWillUpdate (updateClassComponent end)
+- render createElement创建元素 , cloneElement 克隆元素 ，React.children 遍历 children 的操作。
+- getSnapShotBeforeUpdate beforeMutation getSnapshotBeforeUpdate 这个生命周期意义就是配合componentDidUpdate 一起使用，计算形成一个 snapShot 传递给 componentDidUpdate 。保存一次更新前的信息。
+- dom 更新
+- componentDidUpdate 
+
+## 生命周期使用useEffect模拟
+- componentDidMount
+```js
+React.useEffect(()=>{
+    /* 请求数据 ， 事件监听 ， 操纵dom */
+},[])  /* 切记 dep = [] */
+
+```
+- componentWillUnmount 
+```js
+ React.useEffect(()=>{
+        /* 请求数据 ， 事件监听 ， 操纵dom ， 增加定时器，延时器 */
+        return function componentWillUnmount(){
+            /* 解除事件监听器 ，清除定时器，延时器 */
+        }
+},[])/* 切记 dep = [] */
+```
+- componentWillReceiveProps
+```js
+React.useEffect(()=>{
+    console.log('props中number变化：componentWillReceiveProps')
+},[ props.number ]) /* 当前仅当 props中number变化，执行当前effect钩子 */
+
+```
+- componentDidUpdate
+```js
+React.useEffect(()=>{
+    console.log('组件更新完成：componentDidUpdate ')     
+}) /* 没有 dep 依赖项 */
+```
+
+## 类组件获取ref三种方式
+- ref属性字符串 this.refs(ref 标记一个 DOM 元素，一个类组件(函数组件没有实例，不能被 Ref 标记)。)
+- ref是函数 当用一个函数来标记 Ref 的时候，将作为 callback 形式，等到真实 DOM 创建阶段，执行 callback ，获取的 DOM 元素或组件实例，将以回调函数第一个参数形式传入
+
+## forwardRef 转发Ref
+- forwardRef 的初衷就是解决 ref 不能跨层级捕获和传递的问题。
+- 跨层级传递ref
+forwardRef 把 ref 变成了可以通过 props 传递和转发。
+- 合并转发ref
+- 高阶组件转发
+
+## ref实现组件通信
+- 不想通过父组件render改变props方式,触发子组件的更新,子组件通过state单独管理数据层.针对此情况父组件使用ref模式标记子组件实例.
+- 函数组件本身没有实例, 函数组件 forwardRef + useImperativeHandle
+
+## requestIdleCallback
+- Immediate -1 需要立刻执行。
+- UserBlocking 250ms 超时时间250ms，一般指的是用户交互。
+- Normal 5000ms 超时时间5s，不需要直观立即变化的任务，比如网络请求。
+- Low 10000ms 超时时间10s，肯定要执行的任务，但是可以放在最后处理。
+- Idle 一些没有必要的任务，可能不会执行。
+
+## 为什么Proxy一定要配合Reflect使用
+触发代理对象的劫持时保证正确的 this 上下文指向
+
+## get和post区别
+https://www.zhihu.com/question/28586791
+
+## 超类的静态方法也会被子类所继承

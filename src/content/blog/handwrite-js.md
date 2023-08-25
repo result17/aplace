@@ -15,19 +15,20 @@ description: js基本功能函数简单实现
 const format = (n) => {
   let ans = "";
   let count = 0;
-  while (n) {
-    let rest = n % 10;
-    n = Math.floor(n / 10);
+  let abs = Math.abs(n)
+  while (abs) {
+    let rest = abs % 10;
+    abs = parseInt(abs / 10);
     ans += rest;
     count++;
-    if (count % 3 === 0 && n > 0) ans += ",";
+    if (count % 3 === 0 && abs > 0) ans += ",";
   }
   let res = "";
   let i = ans.length;
   while (i > 0) {
     res += ans[--i];
   }
-  return res;
+  return `${n < 0 ? '-' : ''}${res}`;
 };
 ```
 
@@ -57,7 +58,6 @@ const cat = {
     console.log(`${this.name}: ${this.count}`);
   },
 };
-
 setInterval(debounce(() => cat.print(), 500), 1000);
 ```
 
@@ -115,7 +115,8 @@ console.log(a === b);
 ```
 
 ## Promise
-
+<!-- https://juejin.cn/post/7242493101088555064 -->
+<!-- https://juejin.cn/post/7250383386183221285 -->
 ```ts
 enum IPromiseState {
   Pending,
@@ -161,6 +162,15 @@ class IPromise {
     if (this.state !== IPromiseState.Pending) {
       throw new Error("Promise is not pending.");
     }
+
+    /**
+     * const p = new Promise((res) => {
+     *  setTimeout(() => res(1), 3000)
+     *  })
+     * const cp = Promise.resolve(p)
+     * Promise {<pending>}
+     */
+
     if (isThenable(value)) {
       value.then(this.resolve, this.reject);
       return;
@@ -788,4 +798,22 @@ body {
   flex-grow: 1;
   height: 100%;
 }
+```
+
+## new模拟
+```js
+function newOperator(ctor, ...args) {
+  if (typeof ctor !== 'function') {
+    throw new TypeError('Type Error');
+  }
+  // 以ctor.prototype为原型创建一个对象
+  const obj = Object.create(ctor.prototype);
+  // 执行构造函数并将this绑定到新创建的对象上。
+  const res = ctor.apply(obj, args);
+
+  const isObject = typeof res === 'object' && res !== null;
+  const isFunction = typeof res === 'function';
+  return isObject || isFunction ? res : obj;
+}
+
 ```
