@@ -1597,7 +1597,6 @@ function Index() {
 
 - constructor 执行 constructClassInstance 函数，用来实例化 React 组件，组件中
   constructor 就是在这里执行的。
-- constructor
 - getDerivedStateFromProps
 - componentWillMount render
 - render
@@ -1690,6 +1689,50 @@ forwardRef 把 ref 变成了可以通过 props 传递和转发。
 触发代理对象的劫持时保证正确的 this 上下文指向
 
 ## get和post区别
-https://www.zhihu.com/question/28586791
-
+https://www.zhihu.com/question/28586791、
+划分为两种情况：
+1. 浏览器的get，post
+- get 幂等 能被缓存 无副作用 无body 使用url编码
+- post 非幂等 不能被缓存 有副作用 通常带body 使用form-urlencoded,multipart/form-data格式进行二进制请求 来自自带请求
+2. 非浏览器的get，post
+- http协议无效值，理论上服务器和前端可以任意阅读，但业界普通以REST进行规范
+- get 规范一直 无副作用
+- 浏览器中用来实现表单提交的POST，和REST里实现创建资源的POST语义上的不同。
+- 浏览器的POST需要发两个请求吗？不是，这只是客户端的优化策略原理是使用http的continued
 ## 超类的静态方法也会被子类所继承
+
+## vite的核心原理
+1. 浏览器原生 ES 模块支持
+Vite 依赖现代浏览器实现的原生 ES 模块支持,通过浏览器直接请求 .js 文件,而不是通过打包。
+2. 本地 dev server
+使用 koa 构建本地 dev server,实现如模块热更新等开发功能。 新版被替换了
+3. 模块重写
+对模块路径进行重写,转发到 dev server 提供的模块地址,实现按需编译。
+4. 按需编译
+通过ESM的import方式,可以捕获模块请求并进行实时编译,无需预构建。
+5. 浏览器缓存
+开发环境利用浏览器强缓存避免重复编译已缓存模块。
+
+## vite工作流程
+开发模式:
+1. 浏览器发送对模块的请求到 Vite 开发服务器。
+2. 开发服务器使用 esbuild 对模块进行实时编译和转换。
+3. 转换后的模块代码发送回浏览器。
+4. 浏览器接收模块代码,使用原生 ES 模块系统执行。
+5. 对于已缓存的模块会直接重用,避免重复编译。
+6. 开发服务器监听文件变动,自动触发相关模块的重新编译。
+生产模式
+1. 运行 vite build 预构建生产环境代码。
+2. HTML/JS/CSS 资源会经过打包处理,输出为浏览器友好的静态资源
+3. 代码压缩、 Tree Shaking、 CSS 代码分割、虚拟模块等优化被应用。
+
+## typescript protected 修饰符
+- protected成员在自身类和子类中可访问,在类外不可访问
+- protected成员可以在同一个包内的其他类中访问。
+- protected成员会在子类的实例中存在。
+- protected成员不能通过类的实例访问,只能通过类和子类访问。
+
+## useMemo和useCallback 负担
+- useCallback 和 useMemo 仅仅在后续渲染（也就是重渲染）中起作用，在初始渲染中它们反而是有害的
+- useCallback 和 useMemo 作用于 props 并不能避免组件重渲染。只有当每一个 prop 都被缓存，且组件本身也被缓存的情况下，重渲染才能被避免。只要有一丁点疏忽，那么你做的一切努力就打水漂了。所以说，简单点，把它们都删了吧。
+- 把包裹了“纯 js 操作“的 useMemo 也都删了吧。与组件本身的渲染相比，它缓存数据带来的耗时减少是微不足道的，并且会在初始渲染时消耗额外的内存，造成可以被观察到的延迟。

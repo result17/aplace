@@ -254,3 +254,26 @@ CREATE TABLE products (
     CHECK (price > discounted_price)
 );
 ```
+
+## 空值 null
+- sql使用 is /not NULL
+- Postgres 只能 ISNULL和NOTNULL
+- is /not DISTINCT FROM 支持空值运算
+
+## 限制返回行数
+```sql
+SELECT *
+FROM USER
+-- FETCH FIRST 10 ROWS ONLY;
+-- FETCH FIRST 10 ROWS WITH TIES;
+LIMIT 10;
+```
+
+## 提取年份
+```sql
+SELECT extract(year from create_at), COUNT(*)
+FROM employee
+GROUP BY 1;  
+```
+## 分组
+除了 GROUP BY 分组之外，PostgreSQL 还支持 3 种高级的分组选项；ROLLUP 选项可以生成按照层级进行汇总的小计、合计和总计；CUBE 选项用于产生多维度的交叉统计；GROUPING SETS 选项可以用于指定自定义的分组集 ；GROUPING 函数可以用于区分源数据中的空值和分组产生的空值。

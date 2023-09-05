@@ -219,3 +219,71 @@ Promise.all([p1, limit]).then((list) => {
 ## 单页应用spa路由
 
 ## 重绘重排
+
+# 恒生外包面试
+
+## 前端节流函数的应用场景
+- 滚动事件监听 - 例如对window的滚动事件进行节流,避免频繁触发影响性能。
+- Canvas绘画 - 监听鼠标移动进行绘画,节流可以有效降低绘制频率。
+
+触发事件时，如果定时器存在则不执行，如果定时器不存在则再次设置定时器。
+
+```js
+function throttle(method, wait) {
+  let timeout
+  return function(...args) {
+    let context = this
+    if (!timeout) {
+      timeout = setTimeout(() => {
+        timeout = null
+        method.apply(context, args)
+      }, wait)
+    }
+  }
+}
+```
+
+## forEach能改变原来数组
+
+## 继承实现 原型和静态
+```js
+function SuperClass() {}
+function SubClass() {}
+// 显示原型继承
+// 原型继承
+Object.setPrototypeOf(SubClass.prototype, SuperClass.prototype)
+// 静态继承
+Object.setPrototypeOf(SubClass, SuperClass)
+```
+
+## redux常用函数
+```js
+createStore
+combineReducers
+applyMiddleware
+bindActionCreators
+compose
+```
+
+## react生命周期
+- 初始化阶段
+
+1. constructor 执行
+2. getDerivedStateFromProps 执行
+3. componentWillMount 执行
+4. render 函数执行
+5. componentDidMount执行
+
+- 更新阶段
+
+1. componentWillReceiveProps
+2. getDerivedStateFromProps
+3. shouldComponentUpdate
+4. componentWillUpdate
+5. render 函数
+6. getSnapshotBeforeUpdate
+7. componentDidUpdate
+
+- 销毁阶段
+
+1. componentWillUnmount
