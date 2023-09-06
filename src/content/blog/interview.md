@@ -1738,3 +1738,4 @@ Vite 依赖现代浏览器实现的原生 ES 模块支持,通过浏览器直接�
 - 把包裹了“纯 js 操作“的 useMemo 也都删了吧。与组件本身的渲染相比，它缓存数据带来的耗时减少是微不足道的，并且会在初始渲染时消耗额外的内存，造成可以被观察到的延迟。
 
 [react 性能优化指南](https://juejin.cn/post/6935584878071119885)
+[million.js](https://million.dev/blog/virtual-dom)
