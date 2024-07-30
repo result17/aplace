@@ -1,6 +1,6 @@
 ---
 author: cosin
-pubDatetime: 2024-07-30T13:34:24.253Z+08:00  
+pubDatetime: 2024-07-30T13:34:24.253+08:00
 title: 2024年被裁员后生活记录00
 postSlug: 裁员 生活记录
 featured: true
