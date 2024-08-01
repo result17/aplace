@@ -30,8 +30,8 @@ HOC high order component，并非是组件，参数为组件，返回值为组�
 - 赋能props 如React router中的WithRouter
 - 复用逻辑 例如HOC中可以用反向劫持参数组件生命周期函数做监听
 - 控制渲染 如何权限渲染、懒加载（异步组件，配合import()）、节流加载图片
-- 赋能组件 可以提供组件特殊的生命周期函数或特殊事件进行触发
-Link: [一文吃透react HOC](https://juejin.cn/post/6940422320427106335)
+- 赋能组件 可以提供组件特殊的生命周期函数或特殊事件进行触发fea
+<br>Link: [一文吃透react HOC](https://juejin.cn/post/6940422320427106335)
 
 ## BFC创建条件
 
